@@ -26,10 +26,10 @@ namespace GameTransition {
 		private IGTAction currentAction;
 
 		private int currentActionIndex;
-		private int CurrentActionIndex {
-			set {
+		public int CurrentActionIndex {
+			private set {
 				currentActionIndex = value;
-				if( currentActionIndex >= runtimeActions.Count ) {
+                if( currentActionIndex >= runtimeActions.Count || currentActionIndex < 0 ) {
 					currentAction = null;
 					return;
 				}
@@ -79,5 +79,11 @@ namespace GameTransition {
 				currentAction.OnMessage( message );
 			}
 		}
+
+        public bool IsPlaying {
+            get {
+                return currentAction != null;
+            }
+        }
 	}
 }

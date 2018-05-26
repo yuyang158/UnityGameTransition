@@ -24,7 +24,10 @@ namespace GameTransition {
 			}
 		}
 
-		public void StartState() {
+		public void StartState(bool forceReplay = false) {
+            if( !forceReplay && runtimeState.IsPlaying ) {
+                return;
+            }
 			runtimeState.Reset();
 		}
 
@@ -37,7 +40,7 @@ namespace GameTransition {
 		}
 
 		public void OnMessage( string message ) {
-
+            runtimeState.OnMessage( message );
 		}
 	}
 }
