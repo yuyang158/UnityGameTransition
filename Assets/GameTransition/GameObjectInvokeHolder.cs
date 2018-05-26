@@ -4,244 +4,258 @@ using System.Reflection;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.Playables;
+using GameTransition.Utility;
 
 namespace GameTransition {
-	public class GameObjectInvokeDrawerAttribute : PropertyAttribute {
+    public class GameObjectInvokeDrawerAttribute : PropertyAttribute {
 
-	}
+    }
 
-	[Serializable]
-	public class GameObjectInvokeHolder {
-		[Serializable]
-		public struct InvokeParam {
-			public enum Type {
-				Integer,
-				Float,
-				Boolean,
-				String,
-				Object,
-				None
-			}
-			public Type ParamType;
+    [Serializable]
+    public class GameObjectInvokeHolder {
+        [Serializable]
+        public struct InvokeParam {
+            public enum Type {
+                Integer,
+                Float,
+                Boolean,
+                String,
+                Object,
+                None
+            }
+            public Type ParamType;
 
-			public int Integer;
-			public float Float;
-			public bool Boolean;
-			public string String;
-			public UnityEngine.Object Object;
+            public int Integer;
+            public float Float;
+            public bool Boolean;
+            public string String;
+            public UnityEngine.Object Object;
 
-			public object Get() {
-				switch( ParamType ) {
-				case Type.Integer:
-					return Integer;
-				case Type.Float:
-					return Float;
-				case Type.Boolean:
-					return Boolean;
-				case Type.String:
-					return String;
-				case Type.Object:
-					return Object;
-				case Type.None:
-					throw new Exception( "SHOULD NOT REACH THIS" );
-				}
-				throw new Exception( "SHOULD NOT REACH THIS" );
-			}
-		}
+            public object Get() {
+                switch( ParamType ) {
+                case Type.Integer:
+                    return Integer;
+                case Type.Float:
+                    return Float;
+                case Type.Boolean:
+                    return Boolean;
+                case Type.String:
+                    return String;
+                case Type.Object:
+                    return Object;
+                case Type.None:
+                    throw new Exception( "SHOULD NOT REACH THIS" );
+                }
+                throw new Exception( "SHOULD NOT REACH THIS" );
+            }
+        }
 
-		[Serializable]
-		public class InvokeDescriptor {
-			public string MethodName;
-			public string PropertyName;
-			public string ComponentType;
+        [Serializable]
+        public class InvokeDescriptor {
+            public string MethodName;
+            public string PropertyName;
 
-			public InvokeParam Param;
+            public string ComponentType;
+            public string AssemblyName;
 
-			public InvokeDescriptor() {
-				Param.ParamType = InvokeParam.Type.None;
-			}
+            public Type ComponentTypeInput {
+                set { 
+                    ComponentType = value.FullName;
+                    AssemblyName = value.Assembly.FullName;
+                }
+            }
 
-			public InvokeDescriptor( Type paramType ) {
-				if( paramType == typeof( bool ) ) {
-					Param.ParamType = InvokeParam.Type.Boolean;
-				}
-				else if( paramType == typeof( int ) ) {
-					Param.ParamType = InvokeParam.Type.Integer;
-				}
-				else if( paramType == typeof( float ) ) {
-					Param.ParamType = InvokeParam.Type.Float;
-				}
-				else if( paramType == typeof( string ) ) {
-					Param.ParamType = InvokeParam.Type.String;
-				}
-				else if( paramType == typeof( UnityEngine.Object ) ) {
-					Param.ParamType = InvokeParam.Type.Object;
-				}
-				else {
-					Debug.LogError( "UNSUPPORT TYPE : " + paramType.Name );
-				}
-			}
+            private Type componentOwner;
+            public Type ComponentOwner {
+                get {
+                    if(componentOwner == null) {
+                        if(string.IsNullOrEmpty(ComponentType)) {
+                            componentOwner = typeof( GameObject );
+                        }
+                        else {
+                            var assembly = AssemblyHelper.GetAssembly( AssemblyName );
+                            if( assembly != null ) {
+                                componentOwner = assembly.GetType( ComponentType );
+                            }   
+                        }
+                    }
 
-			public override string ToString() {
-				string path;
-				if( string.IsNullOrEmpty( ComponentType ) ) {
-					path = "GameObject.";
-				}
-				else {
-					var last = ComponentType.LastIndexOf( '.' );
-					if( last == -1 ) {
-						last = 0;
-					}
-					else {
-						last += 1;
-					}
-					path = ComponentType.Substring( last ) + ".";
-				}
+                    return componentOwner;
+                }
+            }
 
-				if( string.IsNullOrEmpty( MethodName ) ) {
-					path += PropertyName;
-				}
-				else {
-					if( Param.ParamType == InvokeParam.Type.None ) {
-						path += MethodName + "()";
-					}
-					else {
-						path += string.Format( "{0}({1})", MethodName, Param.ParamType );
-					}
-				}
-				return path;
-			}
-		}
+            public InvokeParam Param;
 
-		[SerializeField]
-		public InvokeDescriptor SelectedDescriptor;
+            public InvokeDescriptor() {
+                Param.ParamType = InvokeParam.Type.None;
+            }
 
-		public GameObject InvokeGO {
-			set;
-			get;
-		}
+            public InvokeDescriptor( Type paramType ) {
+                if( paramType == typeof( bool ) ) {
+                    Param.ParamType = InvokeParam.Type.Boolean;
+                }
+                else if( paramType == typeof( int ) ) {
+                    Param.ParamType = InvokeParam.Type.Integer;
+                }
+                else if( paramType == typeof( float ) ) {
+                    Param.ParamType = InvokeParam.Type.Float;
+                }
+                else if( paramType == typeof( string ) ) {
+                    Param.ParamType = InvokeParam.Type.String;
+                }
+                else if( paramType == typeof( UnityEngine.Object ) ) {
+                    Param.ParamType = InvokeParam.Type.Object;
+                }
+                else {
+                    Debug.LogError( "UNSUPPORT TYPE : " + paramType.Name );
+                }
+            }
 
-		public GameObjectInvokeHolder() {
+            public override string ToString() {
+                var name = ComponentOwner.Name;
+                string path = name + ".";
 
-		}
+                if( string.IsNullOrEmpty( MethodName ) ) {
+                    path += PropertyName;
+                }
+                else {
+                    if( Param.ParamType == InvokeParam.Type.None ) {
+                        path += MethodName + "()";
+                    }
+                    else {
+                        path += string.Format( "{0}({1})", MethodName, Param.ParamType );
+                    }
+                }
+                return path;
+            }
+        }
 
-		private readonly object[] singleParamContainer = new object[1];
-		public void Invoke() {
-			if( !InvokeGO ) {
-				return;
-			}
+        [SerializeField]
+        public InvokeDescriptor SelectedDescriptor;
 
-			var invokeDescriptor = SelectedDescriptor;
-			if( string.IsNullOrEmpty(invokeDescriptor.ComponentType) ) {
-				var instance = InvokeGO;
-				InvokeMethodOrProperty( invokeDescriptor, instance );
-			}
-			else {
-				var pd = InvokeGO.GetComponent<PlayableDirector>();
-				pd.Play();
-				var instance = InvokeGO.GetComponent( "PlayableDirector" );
-				if( instance ) {
-					InvokeMethodOrProperty( invokeDescriptor, instance );
-				}
-			}
-		}
+        public GameObject InvokeGO {
+            set;
+            get;
+        }
 
-		private void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, object instance ) {
-			if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) && string.IsNullOrEmpty( invokeDescriptor.PropertyName ) ) {
-				return;
-			}
+        readonly object[] singleParamContainer = new object[1];
+        public void Invoke() {
+            if( !InvokeGO ) {
+                return;
+            }
 
-			var type = instance.GetType();
-			if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) ) {
-				var propertyInfo = type.GetProperty( invokeDescriptor.PropertyName );
-				propertyInfo.SetValue( instance, invokeDescriptor.Param.Get(), null );
-			}
-			else {
-				var methodInfo = type.GetMethod( invokeDescriptor.MethodName );
-				if( methodInfo.GetParameters().Length == 0 ) {
-					methodInfo.Invoke( instance, null );
-				}
-				else {
-					singleParamContainer[0] = invokeDescriptor.Param.Get();
-					methodInfo.Invoke( instance, singleParamContainer );
-				}
-			}
-		}
+            var invokeDescriptor = SelectedDescriptor;
+            if( string.IsNullOrEmpty( invokeDescriptor.ComponentType ) ) {
+                var instance = InvokeGO;
+                InvokeMethodOrProperty( invokeDescriptor, instance );
+            }
+            else {
+                var instance = InvokeGO.GetComponent( invokeDescriptor.ComponentOwner );
+                if( instance ) {
+                    InvokeMethodOrProperty( invokeDescriptor, instance );
+                }
+            }
+        }
 
-		private bool ValidType( Type type ) {
-			return type == typeof( int ) || type == typeof( double ) || type == typeof( string ) ||
-				type == typeof( TextAsset ) || type == typeof( bool );
-		}
+        private void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, object instance ) {
+            if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) && string.IsNullOrEmpty( invokeDescriptor.PropertyName ) ) {
+                return;
+            }
 
-		private IEnumerable<MethodInfo> CollectValidMethod( Type type ) {
-			List<MethodInfo> results = new List<MethodInfo>();
-			var methods = type.GetMethods( BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance );
-			foreach( var m in methods ) {
-				var p = m.GetParameters();
-				if( m.ReturnType == typeof( void ) && p.Length <= 1 && m.IsAbstract == false && m.IsPublic &&
-					m.IsStatic == false && !m.Name.Contains( "_" ) ) {
-					if( p.Length == 1 && ValidType( p[0].ParameterType ) ) {
-						results.Add( m );
-					}
-				}
-			}
+            var type = instance.GetType();
+            if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) ) {
+                var propertyInfo = type.GetProperty( invokeDescriptor.PropertyName );
+                propertyInfo.SetValue( instance, invokeDescriptor.Param.Get(), null );
+            }
+            else {
+                var methodInfo = type.GetMethod( invokeDescriptor.MethodName );
+                if( methodInfo.GetParameters().Length == 0 ) {
+                    methodInfo.Invoke( instance, null );
+                }
+                else {
+                    singleParamContainer[0] = invokeDescriptor.Param.Get();
+                    methodInfo.Invoke( instance, singleParamContainer );
+                }
+            }
+        }
 
-			return results;
-		}
+        private bool ValidType( Type type ) {
+            return type == typeof( int ) || type == typeof( double ) || type == typeof( string ) ||
+                type == typeof( TextAsset ) || type == typeof( bool );
+        }
 
-		private IEnumerable<PropertyInfo> CollectValidFields( Type type ) {
-			var properties = type.GetProperties( BindingFlags.Public | BindingFlags.Instance );
-			var filtered = from p in properties
-						   where p.CanWrite
-						   && ValidType( p.PropertyType )
-						   select p;
+        private IEnumerable<MethodInfo> CollectValidMethod( Type type ) {
+            List<MethodInfo> results = new List<MethodInfo>();
+            var methods = type.GetMethods( BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance );
+            foreach( var m in methods ) {
+                var p = m.GetParameters();
+                if( (m.ReturnType == typeof( void ) || m.ReturnType == null) && p.Length <= 1 && m.IsAbstract == false && m.IsPublic &&
+                    m.IsStatic == false && !m.Name.Contains( "_" ) ) {
+                    if( p.Length == 0 ) {
+                        results.Add( m );
+                    }
+                    else if( p.Length == 1 && ValidType( p[0].ParameterType ) ) {
+                        results.Add( m );
+                    }
+                }
+            }
 
-			return filtered;
-		}
+            return results;
+        }
 
-		public List<InvokeDescriptor> CollectValidMeshodAndField() {
-			if( !InvokeGO ) {
-				return null;
-			}
+        private IEnumerable<PropertyInfo> CollectValidFields( Type type ) {
+            var properties = type.GetProperties( BindingFlags.Public | BindingFlags.Instance );
+            var filtered = from p in properties
+                           where p.CanWrite
+                           && ValidType( p.PropertyType )
+                           select p;
 
-			List<InvokeDescriptor> descriptors = new List<InvokeDescriptor>();
+            return filtered;
+        }
 
-			var methods = CollectValidMethod( InvokeGO.GetType() );
-			foreach( var method in methods ) {
-				var param = method.GetParameters();
-				descriptors.Add( param.Length > 0 ? new InvokeDescriptor( param[0].ParameterType ) {
-					MethodName = method.Name
-				} : new InvokeDescriptor() {
-					MethodName = method.Name
-				} );
-			}
+        public List<InvokeDescriptor> CollectValidMeshodAndField() {
+            if( !InvokeGO ) {
+                return null;
+            }
 
-			var fields = CollectValidFields( InvokeGO.GetType() );
-			foreach( var field in fields ) {
-				descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
-					PropertyName = field.Name
-				} );
-			}
+            List<InvokeDescriptor> descriptors = new List<InvokeDescriptor>();
 
-			var components = InvokeGO.GetComponents<Component>();
-			foreach( var component in components ) {
-				methods = CollectValidMethod( component.GetType() );
-				foreach( var method in methods ) {
-					descriptors.Add( new InvokeDescriptor() {
-						MethodName = method.Name,
-						ComponentType = component.GetType().FullName
-					} );
-				}
+            var methods = CollectValidMethod( InvokeGO.GetType() );
+            foreach( var method in methods ) {
+                var param = method.GetParameters();
+                descriptors.Add( param.Length > 0 ? new InvokeDescriptor( param[0].ParameterType ) {
+                    MethodName = method.Name
+                } : new InvokeDescriptor() {
+                    MethodName = method.Name
+                } );
+            }
 
-				fields = CollectValidFields( component.GetType() );
-				foreach( var field in fields ) {
-					descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
-						PropertyName = field.Name,
-						ComponentType = component.GetType().FullName
-					} );
-				}
-			}
-			return descriptors;
-		}
-	}
+            var fields = CollectValidFields( InvokeGO.GetType() );
+            foreach( var field in fields ) {
+                descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
+                    PropertyName = field.Name
+                } );
+            }
+
+            var components = InvokeGO.GetComponents<Component>();
+            foreach( var component in components ) {
+                methods = CollectValidMethod( component.GetType() );
+                foreach( var method in methods ) {
+                    descriptors.Add( new InvokeDescriptor() {
+                        MethodName = method.Name,
+                        ComponentTypeInput = component.GetType()
+                    } );
+                }
+
+                fields = CollectValidFields( component.GetType() );
+                foreach( var field in fields ) {
+                    descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
+                        PropertyName = field.Name,
+                        ComponentTypeInput = component.GetType()
+                    } );
+                }
+            }
+            return descriptors;
+        }
+    }
 }

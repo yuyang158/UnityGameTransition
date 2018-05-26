@@ -5,14 +5,14 @@ using System.Collections.Generic;
 namespace GameTransition.Edit {
 	[CustomEditor( typeof( GTInvokeMethodAction ) )]
 	public class GameObjectInvokeHolderEditor : Editor {
-		private GTInvokeMethodAction action;
-		private List<GameObjectInvokeHolder.InvokeDescriptor> descriptors;
+		GTInvokeMethodAction action;
+		List<GameObjectInvokeHolder.InvokeDescriptor> descriptors;
 
 		void OnEnable() {
 			action = target as GTInvokeMethodAction;
 		}
 
-		private int selectedDescriptorIndex = 0;
+		int selectedDescriptorIndex = 0;
 
 		public override void OnInspectorGUI() {
 			EditorGUILayout.PrefixLabel( "Invoke Context" );
@@ -20,7 +20,7 @@ namespace GameTransition.Edit {
 			EditorGUILayout.BeginVertical( "HelpBox" );
 			{
 				EditorGUILayout.BeginHorizontal();
-				GUILayout.FlexibleSpace();
+                GUILayout.Space(120);
 
 				var holder = action.Holder;
 				FunctionInvokeEdit( holder );
@@ -30,8 +30,8 @@ namespace GameTransition.Edit {
 			EditorGUILayout.EndVertical();
 		}
 
-		private void FunctionInvokeEdit( GameObjectInvokeHolder holder ) {
-			var descriptors = holder.CollectValidMeshodAndField();
+		void FunctionInvokeEdit( GameObjectInvokeHolder holder ) {
+			descriptors = holder.CollectValidMeshodAndField();
 			if( descriptors == null ) {
 				string[] noFunction = new string[1];
 				if( holder.SelectedDescriptor != null ) {
@@ -74,7 +74,7 @@ namespace GameTransition.Edit {
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
-			holder.InvokeGO = (GameObject)EditorGUILayout.ObjectField( holder.InvokeGO, typeof( GameObject ), true );
+            holder.InvokeGO = (GameObject)EditorGUILayout.ObjectField( holder.InvokeGO, typeof( GameObject ), true, GUILayout.Width(120) );
 			var selectedDescriptor = holder.SelectedDescriptor;
 			if( selectedDescriptor == null ) {
 				GUILayout.FlexibleSpace();
