@@ -19,6 +19,7 @@ namespace GameTransition {
 
 	public interface IGameObjectProvide {
 		GameObject GO { get; set; }
+        Component Component { get; set; }
 
 		Type ProvideType { get; }
 

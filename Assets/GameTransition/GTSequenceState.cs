@@ -50,9 +50,17 @@ namespace GameTransition {
 			CurrentActionIndex = 0;
 		}
 
-		public void Binding( GameObject go, int index ) {
-			var runtime = runtimeActions[index] as IGameObjectProvide;
-			runtime.GO = go;
+        public void Binding( UnityEngine.Object obj, int index ) {
+            var runtime = runtimeActions[index] as IGameObjectProvide;
+            if( obj is GameObject ) {
+                runtime.GO = (GameObject)obj;
+            }
+            else if(obj is Component){
+                runtime.Component = (Component)obj;
+            }
+            else {
+                throw new Exception("UNSUPPORTED TYPE : " + obj);
+            }
 		}
 
 		public void Update() {

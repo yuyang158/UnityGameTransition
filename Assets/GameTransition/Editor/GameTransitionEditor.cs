@@ -5,18 +5,13 @@ using UnityEngine;
 namespace GameTransition.Edit {
 	[CustomEditor( typeof( GameTransitionBase ) )]
 	public class GameTransitionEditor : Editor {
-		private SerializedObject targetObject;
-		private SerializedProperty bingdings;
-		private GameTransitionBase transition;
+		GameTransitionBase transition;
 
-		private void OnEnable() {
-			targetObject = new SerializedObject( target );
-			bingdings = targetObject.FindProperty( "bindings" );
-
+		void OnEnable() {
 			transition = target as GameTransitionBase;
 		}
 
-		private static bool foldout;
+		static bool foldout;
 		public override void OnInspectorGUI() {
 			base.OnInspectorGUI();
 
@@ -51,7 +46,6 @@ namespace GameTransition.Edit {
 				}
 
 				EditorGUI.indentLevel += 1;
-
 				int bindingIndex = 0;
 				for( int actionIndex = 0; actionIndex < transition.State.Actions.Length; actionIndex++ ) {
 					var action = transition.State.Actions[actionIndex];
@@ -59,24 +53,7 @@ namespace GameTransition.Edit {
 						var provide = action as IGameObjectProvide;
 						var binding = transition.bindings[bindingIndex];
 						binding.ActionIndex = actionIndex;
-
-						if( provide.ProvideType == typeof( GameObject ) ) {
-							binding.GO = (GameObject)EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
-						}
-						else {
-							Component component = null;
-							if( binding.GO != null ) {
-								component = binding.GO.GetComponent( provide.ProvideType );
-							}
-
-							component = (Component)EditorGUILayout.ObjectField( provide.ProvideTitle, component, provide.ProvideType, true );
-							if( component != null ) {
-								binding.GO = component.gameObject;
-							}
-							else {
-								binding.GO = null;
-							}
-						}
+                        binding.GO = (GameObject)EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
 
 						bindingIndex++;
 					}

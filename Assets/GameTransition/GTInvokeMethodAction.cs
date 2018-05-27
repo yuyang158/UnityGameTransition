@@ -9,10 +9,9 @@ namespace GameTransition {
 			get { return true; }
 		}
 
-		public GameObject GO {
-			get;
-			set;
-		}
+		public GameObject GO { get; set; }
+
+        public Component Component { get; set; }
 
 		[SerializeField]
 		GameObjectInvokeHolder holder = new GameObjectInvokeHolder();
@@ -36,12 +35,9 @@ namespace GameTransition {
 			}
 		}
 
-		public GTInvokeMethodAction() {
-
-		}
-
 		public override void OnEnable() {
 			holder.InvokeGO = GO;
+            holder.InvokeComponent = Component;
 			if( Application.isPlaying ) {
 				holder.Invoke();
 			}

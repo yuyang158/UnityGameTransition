@@ -18,6 +18,7 @@ namespace GameTransition {
             public enum Type {
                 Integer,
                 Float,
+                Double,
                 Boolean,
                 String,
                 Object,
@@ -26,7 +27,7 @@ namespace GameTransition {
             public Type ParamType;
 
             public int Integer;
-            public float Float;
+            public double Float;
             public bool Boolean;
             public string String;
             public UnityEngine.Object Object;
@@ -36,6 +37,8 @@ namespace GameTransition {
                 case Type.Integer:
                     return Integer;
                 case Type.Float:
+                    return (float)Float;
+                case Type.Double:
                     return Float;
                 case Type.Boolean:
                     return Boolean;
@@ -65,7 +68,7 @@ namespace GameTransition {
                 }
             }
 
-            private Type componentOwner;
+            Type componentOwner;
             public Type ComponentOwner {
                 get {
                     if(componentOwner == null) {
@@ -106,9 +109,25 @@ namespace GameTransition {
                 else if( paramType == typeof( UnityEngine.Object ) ) {
                     Param.ParamType = InvokeParam.Type.Object;
                 }
+                else if( paramType == typeof( double ) ) {
+                    Param.ParamType = InvokeParam.Type.Double;
+                }
                 else {
                     Debug.LogError( "UNSUPPORT TYPE : " + paramType.Name );
                 }
+            }
+
+            public override bool Equals( object obj ) {
+                InvokeDescriptor other = obj as InvokeDescriptor;
+                if(other == null) {
+                    return false;
+                }
+                return (other.MethodName == MethodName && other.PropertyName == 
+                        PropertyName && other.ComponentType == ComponentType);
+            }
+
+            public override int GetHashCode() {
+                return 1;
             }
 
             public override string ToString() {
@@ -133,31 +152,21 @@ namespace GameTransition {
         [SerializeField]
         public InvokeDescriptor SelectedDescriptor;
 
-        public GameObject InvokeGO {
-            set;
-            get;
-        }
+        public GameObject InvokeGO { set; get; }
+
+        public Component InvokeComponent { get; set; }
 
         readonly object[] singleParamContainer = new object[1];
         public void Invoke() {
-            if( !InvokeGO ) {
+            if( !InvokeGO && !InvokeComponent ) {
                 return;
             }
 
             var invokeDescriptor = SelectedDescriptor;
-            if( string.IsNullOrEmpty( invokeDescriptor.ComponentType ) ) {
-                var instance = InvokeGO;
-                InvokeMethodOrProperty( invokeDescriptor, instance );
-            }
-            else {
-                var instance = InvokeGO.GetComponent( invokeDescriptor.ComponentOwner );
-                if( instance ) {
-                    InvokeMethodOrProperty( invokeDescriptor, instance );
-                }
-            }
+            InvokeMethodOrProperty( invokeDescriptor, InvokeGO | InvokeComponent );
         }
 
-        private void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, object instance ) {
+        void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, object instance ) {
             if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) && string.IsNullOrEmpty( invokeDescriptor.PropertyName ) ) {
                 return;
             }
@@ -179,12 +188,12 @@ namespace GameTransition {
             }
         }
 
-        private bool ValidType( Type type ) {
+        bool ValidType( Type type ) {
             return type == typeof( int ) || type == typeof( double ) || type == typeof( string ) ||
                 type == typeof( TextAsset ) || type == typeof( bool );
         }
 
-        private IEnumerable<MethodInfo> CollectValidMethod( Type type ) {
+        IEnumerable<MethodInfo> CollectValidMethod( Type type ) {
             List<MethodInfo> results = new List<MethodInfo>();
             var methods = type.GetMethods( BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance );
             foreach( var m in methods ) {
@@ -203,7 +212,7 @@ namespace GameTransition {
             return results;
         }
 
-        private IEnumerable<PropertyInfo> CollectValidFields( Type type ) {
+        IEnumerable<PropertyInfo> CollectValidProperties( Type type ) {
             var properties = type.GetProperties( BindingFlags.Public | BindingFlags.Instance );
             var filtered = from p in properties
                            where p.CanWrite
@@ -230,7 +239,7 @@ namespace GameTransition {
                 } );
             }
 
-            var fields = CollectValidFields( InvokeGO.GetType() );
+            var fields = CollectValidProperties( InvokeGO.GetType() );
             foreach( var field in fields ) {
                 descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
                     PropertyName = field.Name
@@ -247,7 +256,7 @@ namespace GameTransition {
                     } );
                 }
 
-                fields = CollectValidFields( component.GetType() );
+                fields = CollectValidProperties( component.GetType() );
                 foreach( var field in fields ) {
                     descriptors.Add( new InvokeDescriptor( field.PropertyType ) {
                         PropertyName = field.Name,

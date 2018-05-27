@@ -5,7 +5,7 @@ namespace GameTransition {
 	public class GameTransitionBase : MonoBehaviour {
 		[Serializable]
 		public class Binding {
-			public GameObject GO;
+            public UnityEngine.Object GO;
 			public int ActionIndex;
 		}
 
@@ -35,7 +35,7 @@ namespace GameTransition {
 			runtimeState.Stop();
 		}
 
-		private void Update() {
+		void Update() {
 			runtimeState.Update();
 		}
 
