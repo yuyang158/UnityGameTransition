@@ -782,6 +782,10 @@ namespace Malee.Editor {
 
 				return element.objectReferenceValue ? element.objectReferenceValue.name : null;
 			}
+			else if( element.propertyType == SerializedPropertyType.ObjectReference && nameProperty == "ToString" ) {
+
+				return element.objectReferenceValue ? element.objectReferenceValue.ToString() : null;
+			}
 
 			SerializedProperty prop = element.FindPropertyRelative(nameProperty);
 

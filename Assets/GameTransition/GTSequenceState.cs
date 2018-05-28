@@ -10,7 +10,7 @@ namespace GameTransition {
 
 	[Serializable, CreateAssetMenu( fileName = "Sequence State", menuName = "GT/Sequence State", order = 1 )]
 	public class GTSequenceState : ScriptableObject {
-		[SerializeField, Reorderable( singleLine = false )]
+		[SerializeField, Reorderable( singleLine = false, elementNameProperty = "ToString" )]
 		private GTActionList actions = new GTActionList();
 		public GTActionList Actions {
 			get { return actions; }

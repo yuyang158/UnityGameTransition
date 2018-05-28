@@ -22,5 +22,9 @@ namespace GameTransition {
 				return triggered;
 			}
 		}
+
+		public override string ToString() {
+			return "Waiting For : " + Message;
+		}
 	}
 }

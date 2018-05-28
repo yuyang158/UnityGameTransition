@@ -42,6 +42,10 @@ namespace GameTransition {
 				holder.Invoke();
 			}
 		}
+
+		public override string ToString() {
+			return ProvideTitle;
+		}
 	}
 }
 
