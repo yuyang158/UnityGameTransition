@@ -288,10 +288,19 @@ namespace GameTransition {
             foreach( var component in components ) {
                 methods = CollectValidMethod( component.GetType() );
                 foreach( var method in methods ) {
-                    descriptors.Add( new InvokeDescriptor() {
-                        MethodName = method.Name,
-                        ComponentTypeInput = component.GetType()
-                    } );
+					var p = method.GetParameters();
+					if( p.Length == 1 ) {
+						descriptors.Add( new InvokeDescriptor( p[0].ParameterType ) {
+							MethodName = method.Name,
+							ComponentTypeInput = component.GetType()
+						} );
+					}
+					else {
+						descriptors.Add( new InvokeDescriptor() {
+							MethodName = method.Name,
+							ComponentTypeInput = component.GetType()
+						} );
+					}
                 }
 
                 fields = CollectValidProperties( component.GetType() );
