@@ -9,10 +9,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1fc2b563ca2a963499a3ef318f7aa708, type: 3}
-  m_Name: TimelineStartPlay
+  m_Name: TimelineStartPlayWaitMessage
   m_EditorClassIdentifier: 
   actions:
     array:
     - {fileID: 11400000, guid: 4d627d9d98153499c9a4f90f19eec485, type: 2}
     - {fileID: 11400000, guid: 9307739fcdca446f59b512b33af67691, type: 2}
     - {fileID: 11400000, guid: 9f1eb70e0959f432c9037148807d2f15, type: 2}
+    - {fileID: 11400000, guid: 2f72aa993e8336748a39e52852297e2a, type: 2}
+    - {fileID: 11400000, guid: 31bc652244cca2d4bb62f21e8674ef16, type: 2}

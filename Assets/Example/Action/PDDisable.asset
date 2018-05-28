@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 757adfc4389e74b43b437776ba48ed71, type: 3}
+  m_Name: PDDisable
+  m_EditorClassIdentifier: 
+  holder:
+    SelectedDescriptor:
+      MethodName: 
+      PropertyName: enabled
+      ComponentType: UnityEngine.Playables.PlayableDirector
+      AssemblyName: UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
+      Param:
+        ParamType: 3
+        Integer: 0
+        Float: 0
+        Boolean: 0
+        String: 
+        Object: {fileID: 0}
