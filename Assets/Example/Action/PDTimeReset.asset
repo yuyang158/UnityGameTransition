@@ -14,11 +14,12 @@ MonoBehaviour:
   holder:
     SelectedDescriptor:
       MethodName: 
-      PropertyName: 
-      ComponentType: 
-      AssemblyName: 
+      PropertyName: time
+      ComponentType: UnityEngine.Playables.PlayableDirector
+      AssemblyName: UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
       Param:
-        ParamType: 5
+        ParamType: 2
         Integer: 0
         Float: 0
         Boolean: 0

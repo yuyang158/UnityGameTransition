@@ -130,6 +130,26 @@ namespace GameTransition {
                 return 1;
             }
 
+			public string MenuPath {
+				get {
+					var name = ComponentOwner.Name;
+					string path = name + "/";
+
+					if( string.IsNullOrEmpty( MethodName ) ) {
+						path += PropertyName;
+					}
+					else {
+						if( Param.ParamType == InvokeParam.Type.None ) {
+							path += MethodName + "()";
+						}
+						else {
+							path += string.Format( "{0}({1})", MethodName, Param.ParamType );
+						}
+					}
+					return path;
+				}
+			}
+
             public override string ToString() {
                 var name = ComponentOwner.Name;
                 string path = name + ".";
@@ -163,10 +183,19 @@ namespace GameTransition {
             }
 
             var invokeDescriptor = SelectedDescriptor;
-            InvokeMethodOrProperty( invokeDescriptor, InvokeGO | InvokeComponent );
-        }
+			if( InvokeGO ) {
+				InvokeMethodOrProperty( invokeDescriptor, InvokeGO );
+			}
+			else {
+				InvokeMethodOrProperty( invokeDescriptor, InvokeComponent );
+			}
+		}
 
-        void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, object instance ) {
+        void InvokeMethodOrProperty( InvokeDescriptor invokeDescriptor, UnityEngine.Object instance ) {
+			if( !instance ) {
+				return;
+			}
+
             if( string.IsNullOrEmpty( invokeDescriptor.MethodName ) && string.IsNullOrEmpty( invokeDescriptor.PropertyName ) ) {
                 return;
             }
@@ -177,8 +206,17 @@ namespace GameTransition {
                 propertyInfo.SetValue( instance, invokeDescriptor.Param.Get(), null );
             }
             else {
-                var methodInfo = type.GetMethod( invokeDescriptor.MethodName );
-                if( methodInfo.GetParameters().Length == 0 ) {
+				Type[] types;
+				if( invokeDescriptor.Param.ParamType == InvokeParam.Type.None ) {
+					types = new Type[0];
+				}
+				else {
+					types = new[] { invokeDescriptor.Param.Get().GetType() };
+
+				}
+
+				var methodInfo = type.GetMethod( invokeDescriptor.MethodName, types );
+                if( types.Length == 0 ) {
                     methodInfo.Invoke( instance, null );
                 }
                 else {

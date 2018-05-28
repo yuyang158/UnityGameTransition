@@ -13,11 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holder:
     SelectedDescriptor:
-      MethodName: 
+      MethodName: Play
       PropertyName: 
-      ComponentType: 
+      ComponentType: UnityEngine.Playables.PlayableDirector
+      AssemblyName: UnityEngine.DirectorModule, Version=0.0.0.0, Culture=neutral,
+        PublicKeyToken=null
       Param:
-        ParamType: 5
+        ParamType: 6
         Integer: 0
         Float: 0
         Boolean: 0

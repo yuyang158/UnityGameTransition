@@ -53,7 +53,7 @@ namespace GameTransition.Edit {
 						var provide = action as IGameObjectProvide;
 						var binding = transition.bindings[bindingIndex];
 						binding.ActionIndex = actionIndex;
-                        binding.GO = (GameObject)EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
+                        binding.GO = EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
 
 						bindingIndex++;
 					}
