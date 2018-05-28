@@ -155,14 +155,14 @@ namespace GameTransition {
                 string path = name + ".";
 
                 if( string.IsNullOrEmpty( MethodName ) ) {
-                    path += PropertyName;
+                    path += PropertyName + " = " + Param.Get();
                 }
                 else {
                     if( Param.ParamType == InvokeParam.Type.None ) {
                         path += MethodName + "()";
                     }
                     else {
-                        path += string.Format( "{0}({1})", MethodName, Param.ParamType );
+                        path += string.Format( "{0}({1})", MethodName, Param.Get() );
                     }
                 }
                 return path;

@@ -10,7 +10,6 @@ namespace GameTransition {
 		}
 
 		public GameObject GO { get; set; }
-
         public Component Component { get; set; }
 
 		[SerializeField]
