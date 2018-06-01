@@ -15,6 +15,8 @@ namespace GameTransition {
 		public virtual void Update() { }
 
 		public virtual void OnMessage( string message ) { }
+
+		public string Name;
 	}
 
 	public interface IGameObjectProvide {

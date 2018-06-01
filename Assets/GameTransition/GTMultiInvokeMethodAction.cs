@@ -42,7 +42,7 @@ namespace GameTransition {
 		}
 
 		public override string ToString() {
-			return ProvideTitle;
+			return string.IsNullOrEmpty(Name) ? ProvideTitle : Name;
 		}
 	}
 }

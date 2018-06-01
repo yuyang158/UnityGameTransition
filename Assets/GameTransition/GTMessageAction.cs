@@ -27,7 +27,7 @@ namespace GameTransition {
 		}
 
 		public override string ToString() {
-			return "Waiting For : " + Message;
+			return string.IsNullOrEmpty( Name ) ? "Waiting For : " + Message : Name;
 		}
 	}
 }

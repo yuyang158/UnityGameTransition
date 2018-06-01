@@ -12,7 +12,7 @@ namespace GameTransition {
 		public GameObject GO { get; set; }
         public Component Component { get; set; }
 
-		[SerializeField]
+		[SerializeField, HideInInspector]
 		GameObjectInvokeHolder holder = new GameObjectInvokeHolder();
 		public GameObjectInvokeHolder Holder {
 			get { return holder; }
@@ -43,7 +43,7 @@ namespace GameTransition {
 		}
 
 		public override string ToString() {
-			return ProvideTitle;
+			return string.IsNullOrEmpty( Name ) ? ProvideTitle : Name;
 		}
 	}
 }

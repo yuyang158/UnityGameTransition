@@ -14,6 +14,7 @@ namespace GameTransition.Edit {
 		}
 
 		public override void OnInspectorGUI() {
+			base.OnInspectorGUI();
 			EditorGUILayout.PrefixLabel( "Invoke Context" );
 
 			EditorGUILayout.BeginVertical( "HelpBox" );
