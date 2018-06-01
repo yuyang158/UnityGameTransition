@@ -17,7 +17,7 @@ namespace GameTransition {
 		[SerializeField, HideInInspector]
 		public Binding[] bindings;
 
-		protected virtual void Start() {
+		protected virtual void Awake() {
 			runtimeState = Instantiate( State );
 			runtimeState.Initialize();
 

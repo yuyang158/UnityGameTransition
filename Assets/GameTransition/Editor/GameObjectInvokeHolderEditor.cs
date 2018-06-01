@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using GameTransition.Utility;
 
 namespace GameTransition.Edit {
 	[CustomEditor( typeof( GTInvokeMethodAction ) )]
 	public class GameObjectInvokeHolderEditor : Editor {
 		GTInvokeMethodAction action;
-		List<GameObjectInvokeHolder.InvokeDescriptor> descriptors;
+		List<InvokeDescriptor> descriptors;
 
 		void OnEnable() {
 			action = target as GTInvokeMethodAction;
@@ -21,17 +22,19 @@ namespace GameTransition.Edit {
 		}
 
 		void OnDescriptorSelected( object selected ) {
-			var descriptor = selected as GameObjectInvokeHolder.InvokeDescriptor;
+			var descriptor = selected as InvokeDescriptor;
 			action.Holder.SelectedDescriptor = descriptor;
 
 			EditorUtility.SetDirty( action );
 		}
 
+		private GameObject templateGO;
+
 		void FunctionInvokeEdit( GameObjectInvokeHolder holder ) {
 			EditorGUILayout.BeginHorizontal();
 			GUILayout.Space( 120 );
 
-			descriptors = holder.CollectValidMeshodAndField();
+			descriptors = TypeHelper.CollectValidMeshodAndField( templateGO );
 			if( descriptors == null ) {
 				GUI.enabled = false;
 				string title;
@@ -70,30 +73,30 @@ namespace GameTransition.Edit {
 			EditorGUILayout.EndHorizontal();
 
 			EditorGUILayout.BeginHorizontal();
-			holder.InvokeGO = (GameObject)EditorGUILayout.ObjectField( holder.InvokeGO, typeof( GameObject ), true, GUILayout.Width( 120 ) );
+			templateGO = (GameObject)EditorGUILayout.ObjectField( templateGO, typeof( GameObject ), true, GUILayout.Width( 120 ) );
 			var selectedDescriptor = holder.SelectedDescriptor;
 			if( selectedDescriptor == null ) {
 				GUILayout.FlexibleSpace();
 			}
 			else {
 				switch( selectedDescriptor.Param.ParamType ) {
-				case GameObjectInvokeHolder.InvokeParam.Type.Integer:
+				case InvokeParam.Type.Integer:
 					selectedDescriptor.Param.Integer = EditorGUILayout.IntField( selectedDescriptor.Param.Integer );
 					break;
-				case GameObjectInvokeHolder.InvokeParam.Type.Float:
-				case GameObjectInvokeHolder.InvokeParam.Type.Double:
+				case InvokeParam.Type.Float:
+				case InvokeParam.Type.Double:
 					selectedDescriptor.Param.Float = EditorGUILayout.DoubleField( selectedDescriptor.Param.Float );
 					break;
-				case GameObjectInvokeHolder.InvokeParam.Type.Boolean:
+				case InvokeParam.Type.Boolean:
 					selectedDescriptor.Param.Boolean = EditorGUILayout.Toggle( selectedDescriptor.Param.Boolean );
 					break;
-				case GameObjectInvokeHolder.InvokeParam.Type.String:
+				case InvokeParam.Type.String:
 					selectedDescriptor.Param.String = EditorGUILayout.TextField( selectedDescriptor.Param.String );
 					break;
-				case GameObjectInvokeHolder.InvokeParam.Type.Object:
+				case InvokeParam.Type.Object:
 					selectedDescriptor.Param.Object = EditorGUILayout.ObjectField( selectedDescriptor.Param.Object, typeof( Object ), false );
 					break;
-				case GameObjectInvokeHolder.InvokeParam.Type.None:
+				case InvokeParam.Type.None:
 					GUILayout.FlexibleSpace();
 					break;
 				}

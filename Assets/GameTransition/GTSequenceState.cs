@@ -86,6 +86,9 @@ namespace GameTransition {
 			if( currentAction != null ) {
 				currentAction.OnMessage( message );
 			}
+			else {
+				Debug.LogWarningFormat( "State Ignore Message {0}", message );
+			}
 		}
 
         public bool IsPlaying {

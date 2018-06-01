@@ -22,17 +22,17 @@ namespace Malee.Editor {
 			SingleLine
 		}
 
-		public delegate void DrawHeaderDelegate(Rect rect, GUIContent label);
-		public delegate void DrawFooterDelegate(Rect rect);
-		public delegate void DrawElementDelegate(Rect rect, SerializedProperty element, GUIContent label, bool selected, bool focused);
-		public delegate void ActionDelegate(ReorderableList list);
-		public delegate bool ActionBoolDelegate(ReorderableList list);
-		public delegate void AddDropdownDelegate(Rect buttonRect, ReorderableList list);
-		public delegate Object DragDropReferenceDelegate(Object[] references, ReorderableList list);
-		public delegate void DragDropAppendDelegate(Object reference, ReorderableList list);
-		public delegate float GetElementHeightDelegate(SerializedProperty element);
-		public delegate float GetElementsHeightDelegate(ReorderableList list);
-		public delegate string GetElementNameDelegate(SerializedProperty element);
+		public delegate void DrawHeaderDelegate( Rect rect, GUIContent label );
+		public delegate void DrawFooterDelegate( Rect rect );
+		public delegate void DrawElementDelegate( Rect rect, SerializedProperty element, GUIContent label, bool selected, bool focused );
+		public delegate void ActionDelegate( ReorderableList list );
+		public delegate bool ActionBoolDelegate( ReorderableList list );
+		public delegate void AddDropdownDelegate( Rect buttonRect, ReorderableList list );
+		public delegate Object DragDropReferenceDelegate( Object[] references, ReorderableList list );
+		public delegate void DragDropAppendDelegate( Object reference, ReorderableList list );
+		public delegate float GetElementHeightDelegate( SerializedProperty element );
+		public delegate float GetElementsHeightDelegate( ReorderableList list );
+		public delegate string GetElementNameDelegate( SerializedProperty element );
 
 		public event DrawHeaderDelegate drawHeaderCallback;
 		public event DrawFooterDelegate drawFooterCallback;
@@ -53,7 +53,7 @@ namespace Malee.Editor {
 		public event ActionDelegate onChangedCallback;
 
 		public bool canAdd;
-		public bool canRemove;	
+		public bool canRemove;
 		public bool draggable;
 		public bool expandable;
 		public bool multipleSelection;
@@ -73,14 +73,14 @@ namespace Malee.Editor {
 		private SerializedProperty list;
 		private int controlID = -1;
 		private Rect[] elementRects;
-		private GUIContent elementLabel;		
+		private GUIContent elementLabel;
 		private ListSelection selection;
 		private SlideGroup slideGroup;
 		private int pressIndex;
 
 		private float elementSpacing {
 
-			get { return Mathf.Max(0, verticalSpacing - 2); }
+			get { return Mathf.Max( 0, verticalSpacing - 2 ); }
 		}
 
 		private bool dragging;
@@ -89,34 +89,34 @@ namespace Malee.Editor {
 		private int dragDirection;
 		private DragElement[] dragList;
 		private ListSelection beforeDragSelection;
-		
-		private int dragDropControlID = -1;		
 
-		public ReorderableList(SerializedProperty list)
-			: this(list, true, true, true) {
+		private int dragDropControlID = -1;
+
+		public ReorderableList( SerializedProperty list )
+			: this( list, true, true, true ) {
 		}
 
-		public ReorderableList(SerializedProperty list, bool canAdd, bool canRemove, bool draggable)
-			: this(list, canAdd, canRemove, draggable, ElementDisplayType.Auto, null, null, null) {
+		public ReorderableList( SerializedProperty list, bool canAdd, bool canRemove, bool draggable )
+			: this( list, canAdd, canRemove, draggable, ElementDisplayType.Auto, null, null, null ) {
 		}
 
-		public ReorderableList(SerializedProperty list, bool canAdd, bool canRemove, bool draggable, ElementDisplayType elementDisplayType, string elementNameProperty, Texture elementIcon) 
-			: this(list, canAdd, canRemove, draggable, elementDisplayType, elementNameProperty, null, elementIcon) {
+		public ReorderableList( SerializedProperty list, bool canAdd, bool canRemove, bool draggable, ElementDisplayType elementDisplayType, string elementNameProperty, Texture elementIcon )
+			: this( list, canAdd, canRemove, draggable, elementDisplayType, elementNameProperty, null, elementIcon ) {
 		}
 
-		public ReorderableList(SerializedProperty list, bool canAdd, bool canRemove, bool draggable, ElementDisplayType elementDisplayType, string elementNameProperty, string elementNameOverride, Texture elementIcon) {
+		public ReorderableList( SerializedProperty list, bool canAdd, bool canRemove, bool draggable, ElementDisplayType elementDisplayType, string elementNameProperty, string elementNameOverride, Texture elementIcon ) {
 
-			if (list == null) {
+			if( list == null ) {
 
 				throw new MissingListExeption();
 			}
-			else if (!list.isArray) {
+			else if( !list.isArray ) {
 
 				//check if user passed in a ReorderableArray, if so, that becomes the list object
 
-				SerializedProperty array = list.FindPropertyRelative("array");
+				SerializedProperty array = list.FindPropertyRelative( "array" );
 
-				if (array == null || !array.isArray) {
+				if( array == null || !array.isArray ) {
 
 					throw new InvalidListException();
 				}
@@ -138,7 +138,7 @@ namespace Malee.Editor {
 
 			id = GetHashCode();
 			list.isExpanded = true;
-			label = new GUIContent(list.displayName);
+			label = new GUIContent( list.displayName );
 
 #if UNITY_5_6_OR_NEWER
 			verticalSpacing = EditorGUIUtility.standardVerticalSpacing;
@@ -181,13 +181,13 @@ namespace Malee.Editor {
 		public int[] Selected {
 
 			get { return selection.ToArray(); }
-			set { selection = new ListSelection(value); }
+			set { selection = new ListSelection( value ); }
 		}
 
 		public int Index {
 
 			get { return selection.First; }
-			set { selection.Select(value); }
+			set { selection.Select( value ); }
 		}
 
 		public bool IsDragging {
@@ -201,7 +201,7 @@ namespace Malee.Editor {
 
 		public float GetHeight() {
 
-			if (HasList) {
+			if( HasList ) {
 
 				return list.isExpanded ? headerHeight + GetElementsHeight() + footerHeight : headerHeight;
 			}
@@ -213,87 +213,87 @@ namespace Malee.Editor {
 
 		public void DoLayoutList() {
 
-			Rect position = EditorGUILayout.GetControlRect(false, GetHeight(), EditorStyles.largeLabel);
+			Rect position = EditorGUILayout.GetControlRect( false, GetHeight(), EditorStyles.largeLabel );
 
-			DoList(EditorGUI.IndentedRect(position), label);
+			DoList( EditorGUI.IndentedRect( position ), label );
 		}
 
-		public void DoList(Rect rect, GUIContent label) {
+		public void DoList( Rect rect, GUIContent label ) {
 
 			int indent = EditorGUI.indentLevel;
 			EditorGUI.indentLevel = 0;
 
 			Rect headerRect = rect;
-			headerRect.height = headerHeight;			
+			headerRect.height = headerHeight;
 
-			if (!HasList) {
+			if( !HasList ) {
 
-				DrawEmpty(headerRect, label.text + " is not an Array!", GUIStyle.none, EditorStyles.helpBox);
+				DrawEmpty( headerRect, label.text + " is not an Array!", GUIStyle.none, EditorStyles.helpBox );
 			}
 			else {
 
-				controlID = GUIUtility.GetControlID(selectionHash, FocusType.Keyboard, rect);
-				dragDropControlID = GUIUtility.GetControlID(dragAndDropHash, FocusType.Passive, rect);
+				controlID = GUIUtility.GetControlID( selectionHash, FocusType.Keyboard, rect );
+				dragDropControlID = GUIUtility.GetControlID( dragAndDropHash, FocusType.Passive, rect );
 
-				DrawHeader(headerRect, label);
+				DrawHeader( headerRect, label );
 
-				if (list.isExpanded) {					
+				if( list.isExpanded ) {
 
 					Rect elementBackgroundRect = rect;
 					elementBackgroundRect.yMin = headerRect.yMax;
-					elementBackgroundRect.yMax = rect.yMax - footerHeight;		
+					elementBackgroundRect.yMax = rect.yMax - footerHeight;
 
 					Event evt = Event.current;
 
-					if (selection.Length > 1) {
+					if( selection.Length > 1 ) {
 
-						if (evt.type == EventType.ContextClick && CanSelect(evt.mousePosition)) {
+						if( evt.type == EventType.ContextClick && CanSelect( evt.mousePosition ) ) {
 
-							HandleMultipleContextClick(evt);
+							HandleMultipleContextClick( evt );
 						}
 					}
 
-					if (list.arraySize > 0) {
+					if( list.arraySize > 0 ) {
 
 						//update element rects if not dragging. Dragging caches draw rects so no need to update
 
-						if (!dragging) {
+						if( !dragging ) {
 
-							UpdateElementRects(elementBackgroundRect, evt);
+							UpdateElementRects( elementBackgroundRect, evt );
 						}
 
-						if (elementRects.Length > 0) {
+						if( elementRects.Length > 0 ) {
 
 							Rect selectableRect = elementBackgroundRect;
 							selectableRect.yMin = elementRects[0].yMin;
 							selectableRect.yMax = elementRects[elementRects.Length - 1].yMax;
 
-							HandlePreSelection(selectableRect, evt);
-							DrawElements(elementBackgroundRect, evt);
-							HandlePostSelection(selectableRect, evt);
+							HandlePreSelection( selectableRect, evt );
+							DrawElements( elementBackgroundRect, evt );
+							HandlePostSelection( selectableRect, evt );
 						}
 					}
 					else {
 
-						DrawEmpty(elementBackgroundRect, "List is Empty", Style.boxBackground, Style.verticalLabel);
+						DrawEmpty( elementBackgroundRect, "List is Empty", Style.boxBackground, Style.verticalLabel );
 					}
 
 					Rect footerRect = rect;
 					footerRect.yMin = elementBackgroundRect.yMax;
 					footerRect.xMin = rect.xMax - 58;
 
-					DrawFooter(footerRect);
+					DrawFooter( footerRect );
 				}
 			}
 
 			EditorGUI.indentLevel = indent;
 		}
 
-		public SerializedProperty AddItem<T>(T item) where T : Object {
+		public SerializedProperty AddItem<T>( T item ) where T : Object {
 
 			SerializedProperty property = AddItem();
 
-			if (property != null) {
+			if( property != null ) {
 
 				property.objectReferenceValue = item;
 			}
@@ -303,61 +303,61 @@ namespace Malee.Editor {
 
 		public SerializedProperty AddItem() {
 
-			if (HasList) {
+			if( HasList ) {
 
 				list.arraySize++;
-				selection.Select(list.arraySize - 1);
+				selection.Select( list.arraySize - 1 );
 
 				DispatchChange();
 
-				return list.GetArrayElementAtIndex(selection.Last);
+				return list.GetArrayElementAtIndex( selection.Last );
 			}
 			else {
 
 				throw new InvalidListException();
 			}
-		}		
+		}
 
-		public void Remove(int[] selection) {
+		public void Remove( int[] selection ) {
 
-			System.Array.Sort(selection);
+			System.Array.Sort( selection );
 
 			int i = selection.Length;
 
-			while (--i > -1) {
+			while( --i > -1 ) {
 
-				RemoveItem(selection[i]);
+				RemoveItem( selection[i] );
 			}
 		}
 
-		public void RemoveItem(int index) {
+		public void RemoveItem( int index ) {
 
-			if (HasList && index >= 0 && index < list.arraySize) {
+			if( HasList && index >= 0 && index < list.arraySize ) {
 
-				SerializedProperty property = list.GetArrayElementAtIndex(index);
+				SerializedProperty property = list.GetArrayElementAtIndex( index );
 
-				if (property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue) {
+				if( property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue ) {
 
 					property.objectReferenceValue = null;
 				}
 
-				list.DeleteArrayElementAtIndex(index);
-				selection.Remove(index);
+				list.DeleteArrayElementAtIndex( index );
+				selection.Remove( index );
 
-				if (list.arraySize > 0) {
+				if( list.arraySize > 0 ) {
 
-					selection.Select(Mathf.Max(0, index - 1));
+					selection.Select( Mathf.Max( 0, index - 1 ) );
 				}
 
 				DispatchChange();
 			}
 		}
 
-		public SerializedProperty GetItem(int index) {
+		public SerializedProperty GetItem( int index ) {
 
-			if (HasList && index >= 0 && index < list.arraySize) {
+			if( HasList && index >= 0 && index < list.arraySize ) {
 
-				return list.GetArrayElementAtIndex(index);
+				return list.GetArrayElementAtIndex( index );
 			}
 			else {
 
@@ -365,15 +365,15 @@ namespace Malee.Editor {
 			}
 		}
 
-		public int IndexOf(SerializedProperty element) {
+		public int IndexOf( SerializedProperty element ) {
 
-			if (element != null) {
+			if( element != null ) {
 
 				int i = list.arraySize;
 
-				while (--i > -1) {
+				while( --i > -1 ) {
 
-					if (SerializedProperty.EqualContents(element, list.GetArrayElementAtIndex(i))) {
+					if( SerializedProperty.EqualContents( element, list.GetArrayElementAtIndex( i ) ) ) {
 
 						return i;
 					}
@@ -395,7 +395,7 @@ namespace Malee.Editor {
 
 		public void ReleaseKeyboardFocus() {
 
-			if (GUIUtility.keyboardControl == id) {
+			if( GUIUtility.keyboardControl == id ) {
 
 				GUIUtility.keyboardControl = 0;
 			}
@@ -407,14 +407,14 @@ namespace Malee.Editor {
 
 		private float GetElementsHeight() {
 
-			if (getElementsHeightCallback != null) {
+			if( getElementsHeightCallback != null ) {
 
-				return getElementsHeightCallback(this);
+				return getElementsHeightCallback( this );
 			}
 
 			int i, len = list.arraySize;
 
-			if (len == 0) {
+			if( len == 0 ) {
 
 				return 28;
 			}
@@ -422,29 +422,29 @@ namespace Malee.Editor {
 			float totalHeight = 0;
 			float spacing = elementSpacing;
 
-			for (i = 0; i < len; i++) {
+			for( i = 0; i < len; i++ ) {
 
-				totalHeight += GetElementHeight(list.GetArrayElementAtIndex(i)) + spacing;
+				totalHeight += GetElementHeight( list.GetArrayElementAtIndex( i ) ) + spacing;
 			}
 
 			return totalHeight + 7 - spacing;
 		}
 
-		private float GetElementHeight(SerializedProperty element) {
+		private float GetElementHeight( SerializedProperty element ) {
 
-			if (getElementHeightCallback != null) {
+			if( getElementHeightCallback != null ) {
 
-				return getElementHeightCallback(element) + ELEMENT_HEIGHT_OFFSET;
+				return getElementHeightCallback( element ) + ELEMENT_HEIGHT_OFFSET;
 			}
 			else {
 
-				return EditorGUI.GetPropertyHeight(element, GetElementLabel(element), IsElementExpandable(element)) + ELEMENT_HEIGHT_OFFSET;
+				return EditorGUI.GetPropertyHeight( element, GetElementLabel( element ), IsElementExpandable( element ) ) + ELEMENT_HEIGHT_OFFSET;
 			}
 		}
 
-		private Rect GetElementDrawRect(int index, Rect desiredRect) {
+		private Rect GetElementDrawRect( int index, Rect desiredRect ) {
 
-			if (slideEasing <= 0) {
+			if( slideEasing <= 0 ) {
 
 				return desiredRect;
 			}
@@ -453,7 +453,7 @@ namespace Malee.Editor {
 				//lerp the drag easing toward slide easing, this creates a stronger easing at the start then slower at the end
 				//when dealing with large lists, we can
 
-				return dragging ? slideGroup.GetRect(dragList[index].startIndex, desiredRect, slideEasing) : slideGroup.SetRect(index, desiredRect);
+				return dragging ? slideGroup.GetRect( dragList[index].startIndex, desiredRect, slideEasing ) : slideGroup.SetRect( index, desiredRect );
 			}
 		}
 
@@ -467,12 +467,12 @@ namespace Malee.Editor {
 		}
 		*/
 
-		private Rect GetElementRenderRect(SerializedProperty element, Rect elementRect) {
+		private Rect GetElementRenderRect( SerializedProperty element, Rect elementRect ) {
 
 			float offset = draggable ? 20 : 5;
 
 			Rect rect = elementRect;
-			rect.xMin += IsElementExpandable(element) ? offset + 10 : offset;
+			rect.xMin += IsElementExpandable( element ) ? offset + 10 : offset;
 			rect.xMax -= 5;
 			rect.yMin += ELEMENT_EDGE_TOP;
 			rect.yMax -= ELEMENT_EDGE_BOT;
@@ -480,14 +480,14 @@ namespace Malee.Editor {
 			return rect;
 		}
 
-		private void DrawHeader(Rect rect, GUIContent label) {
+		private void DrawHeader( Rect rect, GUIContent label ) {
 
-			if (showDefaultBackground && Event.current.type == EventType.Repaint) {
+			if( showDefaultBackground && Event.current.type == EventType.Repaint ) {
 
-				Style.headerBackground.Draw(rect, false, false, false, false);
+				Style.headerBackground.Draw( rect, false, false, false, false );
 			}
-			
-			HandleDragAndDrop(rect, Event.current);
+
+			HandleDragAndDrop( rect, Event.current );
 
 			Rect titleRect = rect;
 			titleRect.xMin += 6f;
@@ -495,89 +495,89 @@ namespace Malee.Editor {
 			titleRect.height -= 2f;
 			titleRect.y++;
 
-			label = EditorGUI.BeginProperty(titleRect, label, list);
+			label = EditorGUI.BeginProperty( titleRect, label, list );
 
-			if (drawHeaderCallback != null) {
+			if( drawHeaderCallback != null ) {
 
-				drawHeaderCallback(titleRect, label);
+				drawHeaderCallback( titleRect, label );
 			}
-			else if (expandable) { 
+			else if( expandable ) {
 
 				titleRect.xMin += 10;
 
 				EditorGUI.BeginChangeCheck();
 
-				bool isExpanded = EditorGUI.Foldout(titleRect, list.isExpanded, label, true);
+				bool isExpanded = EditorGUI.Foldout( titleRect, list.isExpanded, label, true );
 
-				if (EditorGUI.EndChangeCheck()) {
+				if( EditorGUI.EndChangeCheck() ) {
 
 					list.isExpanded = isExpanded;
 				}
 			}
 			else {
 
-				GUI.Label(titleRect, label, EditorStyles.label);
+				GUI.Label( titleRect, label, EditorStyles.label );
 			}
 
 			EditorGUI.EndProperty();
 
-			if (elementDisplayType != ElementDisplayType.SingleLine) {
+			if( elementDisplayType != ElementDisplayType.SingleLine ) {
 
 				Rect bRect1 = rect;
 				bRect1.xMin = rect.xMax - 25;
 				bRect1.xMax = rect.xMax - 5;
 
-				if (GUI.Button(bRect1, Style.expandButton, Style.preButton)) {
+				if( GUI.Button( bRect1, Style.expandButton, Style.preButton ) ) {
 
-					ExpandElements(true);
+					ExpandElements( true );
 				}
 
 				Rect bRect2 = rect;
 				bRect2.xMin = bRect1.xMin - 20;
 				bRect2.xMax = bRect1.xMin;
 
-				if (GUI.Button(bRect2, Style.collapseButton, Style.preButton)) {
+				if( GUI.Button( bRect2, Style.collapseButton, Style.preButton ) ) {
 
-					ExpandElements(false);
+					ExpandElements( false );
 				}
-			}		
+			}
 		}
 
-		private void ExpandElements(bool expand) {
+		private void ExpandElements( bool expand ) {
 
-			if (!list.isExpanded && expand) {
+			if( !list.isExpanded && expand ) {
 
 				list.isExpanded = true;
 			}
 
-			for (int i = 0; i < list.arraySize; i++) {
+			for( int i = 0; i < list.arraySize; i++ ) {
 
-				list.GetArrayElementAtIndex(i).isExpanded = expand;
+				list.GetArrayElementAtIndex( i ).isExpanded = expand;
 			}
 		}
 
-		private void DrawEmpty(Rect rect, string label, GUIStyle backgroundStyle, GUIStyle labelStyle) {
+		private void DrawEmpty( Rect rect, string label, GUIStyle backgroundStyle, GUIStyle labelStyle ) {
 
-			if (showDefaultBackground && Event.current.type == EventType.Repaint) {
+			if( showDefaultBackground && Event.current.type == EventType.Repaint ) {
 
-				backgroundStyle.Draw(rect, false, false, false, false);
+				backgroundStyle.Draw( rect, false, false, false, false );
 			}
 
-			EditorGUI.LabelField(rect, label, labelStyle);
+			EditorGUI.LabelField( rect, label, labelStyle );
 		}
 
-		private void UpdateElementRects(Rect rect, Event evt) {			
+		private void UpdateElementRects( Rect rect, Event evt ) {
 
 			//resize array if elements changed
 
 			int i, len = list.arraySize;
 
-			if (len != elementRects.Length) {
+			if( len != elementRects.Length ) {
 
-				System.Array.Resize(ref elementRects, len);
+				System.Array.Resize( ref elementRects, len );
 			}
 
-			if (evt.type == EventType.Repaint) {
+			if( evt.type == EventType.Repaint ) {
 
 				//start rect
 
@@ -586,14 +586,14 @@ namespace Malee.Editor {
 
 				float spacing = elementSpacing;
 
-				for (i = 0; i < len; i++) {
+				for( i = 0; i < len; i++ ) {
 
-					SerializedProperty element = list.GetArrayElementAtIndex(i);
+					SerializedProperty element = list.GetArrayElementAtIndex( i );
 
 					//update the elementRects value for this object. Grab the last elementRect for startPosition
 
 					elementRect.y = elementRect.yMax;
-					elementRect.height = GetElementHeight(element);
+					elementRect.height = GetElementHeight( element );
 					elementRects[i] = elementRect;
 
 					elementRect.yMax += spacing;
@@ -601,29 +601,29 @@ namespace Malee.Editor {
 			}
 		}
 
-		private void DrawElements(Rect rect, Event evt) {
+		private void DrawElements( Rect rect, Event evt ) {
 
 			//draw list background
 
-			if (showDefaultBackground && evt.type == EventType.Repaint) {
+			if( showDefaultBackground && evt.type == EventType.Repaint ) {
 
-				Style.boxBackground.Draw(rect, false, false, false, false);
+				Style.boxBackground.Draw( rect, false, false, false, false );
 			}
-			
+
 			//if not dragging, draw elements as usual
 
-			if (!dragging) {
+			if( !dragging ) {
 
 				int i, len = list.arraySize;
 
-				for (i = 0; i < len; i++) { 
+				for( i = 0; i < len; i++ ) {
 
-					bool selected = selection.Contains(i);
+					bool selected = selection.Contains( i );
 
-					DrawElement(list.GetArrayElementAtIndex(i), GetElementDrawRect(i, elementRects[i]), selected, selected && GUIUtility.keyboardControl == controlID);
+					DrawElement( list.GetArrayElementAtIndex( i ), GetElementDrawRect( i, elementRects[i] ), selected, selected && GUIUtility.keyboardControl == controlID );
 				}
 			}
-			else if (evt.type == EventType.Repaint) {
+			else if( evt.type == EventType.Repaint ) {
 
 				//draw dragging elements only when repainting
 
@@ -632,7 +632,7 @@ namespace Malee.Editor {
 
 				//first, find the rects of the selected elements, we need to use them for overlap queries
 
-				for (i = 0; i < sLen; i++) {
+				for( i = 0; i < sLen; i++ ) {
 
 					DragElement element = dragList[i];
 
@@ -646,15 +646,15 @@ namespace Malee.Editor {
 
 				i = len;
 
-				while (--i > -1) {
+				while( --i > -1 ) {
 
-					DragElement element = dragList[i];					
+					DragElement element = dragList[i];
 
 					//draw dragging elements last as the loop is backwards
 
-					if (element.selected) {
+					if( element.selected ) {
 
-						DrawElement(element.property, element.desiredRect, true, true);
+						DrawElement( element.property, element.desiredRect, true, true );
 						continue;
 					}
 
@@ -668,11 +668,11 @@ namespace Malee.Editor {
 					int start = dragDirection > 0 ? sLen - 1 : 0;
 					int end = dragDirection > 0 ? -1 : sLen;
 
-					for (s = start; s != end; s -= dragDirection) { 
+					for( s = start; s != end; s -= dragDirection ) {
 
 						DragElement selected = dragList[s];
 
-						if (selected.Overlaps(elementRect, elementIndex, dragDirection)) {
+						if( selected.Overlaps( elementRect, elementIndex, dragDirection ) ) {
 
 							elementRect.y -= selected.rect.height * dragDirection;
 							elementIndex += dragDirection;
@@ -681,7 +681,7 @@ namespace Malee.Editor {
 
 					//draw the element with the new rect
 
-					DrawElement(element.property, GetElementDrawRect(i, elementRect), false, false);
+					DrawElement( element.property, GetElementDrawRect( i, elementRect ), false, false );
 
 					//reassign the element back into the dragList
 
@@ -691,94 +691,94 @@ namespace Malee.Editor {
 			}
 		}
 
-		private void DrawElement(SerializedProperty element, Rect rect, bool selected, bool focused) {
+		private void DrawElement( SerializedProperty element, Rect rect, bool selected, bool focused ) {
 
 			Event evt = Event.current;
 
-			if (drawElementBackgroundCallback != null) {
+			if( drawElementBackgroundCallback != null ) {
 
-				drawElementBackgroundCallback(rect, element, null, selected, focused);
+				drawElementBackgroundCallback( rect, element, null, selected, focused );
 			}
-			else if (evt.type == EventType.Repaint) {
+			else if( evt.type == EventType.Repaint ) {
 
-				Style.elementBackground.Draw(rect, false, selected, selected, focused);
+				Style.elementBackground.Draw( rect, false, selected, selected, focused );
 			}
-			
-			if (evt.type == EventType.Repaint && draggable) {
 
-				Style.draggingHandle.Draw(new Rect(rect.x + 5, rect.y + 6, 10, rect.height - (rect.height - 6)), false, false, false, false);
-			}			
+			if( evt.type == EventType.Repaint && draggable ) {
 
-			GUIContent label = GetElementLabel(element);
+				Style.draggingHandle.Draw( new Rect( rect.x + 5, rect.y + 6, 10, rect.height - ( rect.height - 6 ) ), false, false, false, false );
+			}
 
-			Rect renderRect = GetElementRenderRect(element, rect);
+			GUIContent label = GetElementLabel( element );
 
-			if (drawElementCallback != null) {
+			Rect renderRect = GetElementRenderRect( element, rect );
 
-				drawElementCallback(renderRect, element, label, selected, focused);
+			if( drawElementCallback != null ) {
+
+				drawElementCallback( renderRect, element, label, selected, focused );
 			}
 			else {
 
-				EditorGUI.PropertyField(renderRect, element, label, true);
+				EditorGUI.PropertyField( renderRect, element, label, true );
 			}
 
 			//handle context click
 
-			int controlId = GUIUtility.GetControlID(label, FocusType.Passive, rect);
+			int controlId = GUIUtility.GetControlID( label, FocusType.Passive, rect );
 
-			switch (evt.GetTypeForControl(controlId)) {
+			switch( evt.GetTypeForControl( controlId ) ) {
 
-				case EventType.ContextClick:
+			case EventType.ContextClick:
 
-					if (rect.Contains(evt.mousePosition)) {
+				if( rect.Contains( evt.mousePosition ) ) {
 
-						HandleContextClick(evt, element);
-					}
+					HandleContextClick( evt, element );
+				}
 
-					break;
+				break;
 			}
 		}
 
-		private GUIContent GetElementLabel(SerializedProperty element) {
+		private GUIContent GetElementLabel( SerializedProperty element ) {
 
 			string name;
 
-			if (getElementNameCallback != null) {
+			if( getElementNameCallback != null ) {
 
-				name = getElementNameCallback(element);
+				name = getElementNameCallback( element );
 			}
 			else {
 
-				name = GetElementName(element, elementNameProperty, elementNameOverride);
+				name = GetElementName( element, elementNameProperty, elementNameOverride );
 			}
 
-			elementLabel.text = !string.IsNullOrEmpty(name) ? name : element.displayName;
+			elementLabel.text = !string.IsNullOrEmpty( name ) ? name : element.displayName;
 			elementLabel.tooltip = element.tooltip;
 			elementLabel.image = elementIcon;
 
 			return elementLabel;
 		}
 
-		private static string GetElementName(SerializedProperty element, string nameProperty, string nameOverride) {
+		private static string GetElementName( SerializedProperty element, string nameProperty, string nameOverride ) {
 
-			if (!string.IsNullOrEmpty(nameOverride)) {
+			if( !string.IsNullOrEmpty( nameOverride ) ) {
 
 				string path = element.propertyPath;
 
-				if (path.EndsWith("]")) {
+				if( path.EndsWith( "]" ) ) {
 
-					int startIndex = path.LastIndexOf('[') + 1;
+					int startIndex = path.LastIndexOf( '[' ) + 1;
 
-					return string.Concat(nameOverride, " ", path.Substring(startIndex, path.Length - startIndex - 1));
+					return string.Concat( nameOverride, " ", path.Substring( startIndex, path.Length - startIndex - 1 ) );
 				}
 
 				return nameOverride;
 			}
-			else if (string.IsNullOrEmpty(nameProperty)) {
+			else if( string.IsNullOrEmpty( nameProperty ) ) {
 
 				return null;
 			}
-			else if (element.propertyType == SerializedPropertyType.ObjectReference && nameProperty == "name") {
+			else if( element.propertyType == SerializedPropertyType.ObjectReference && nameProperty == "name" ) {
 
 				return element.objectReferenceValue ? element.objectReferenceValue.name : null;
 			}
@@ -787,36 +787,36 @@ namespace Malee.Editor {
 				return element.objectReferenceValue ? element.objectReferenceValue.ToString() : null;
 			}
 
-			SerializedProperty prop = element.FindPropertyRelative(nameProperty);
+			SerializedProperty prop = element.FindPropertyRelative( nameProperty );
 
-			if (prop != null) {
+			if( prop != null ) {
 
-				switch (prop.propertyType) {
+				switch( prop.propertyType ) {
 
-					case SerializedPropertyType.ObjectReference:
+				case SerializedPropertyType.ObjectReference:
 
-						return prop.objectReferenceValue ? prop.objectReferenceValue.name : null;
+					return prop.objectReferenceValue ? prop.objectReferenceValue.name : null;
 
-					case SerializedPropertyType.Enum:
+				case SerializedPropertyType.Enum:
 
-						return prop.enumDisplayNames[prop.enumValueIndex];
+					return prop.enumDisplayNames[prop.enumValueIndex];
 
-					case SerializedPropertyType.Integer:
-					case SerializedPropertyType.Character:
+				case SerializedPropertyType.Integer:
+				case SerializedPropertyType.Character:
 
-						return prop.intValue.ToString();
+					return prop.intValue.ToString();
 
-					case SerializedPropertyType.LayerMask:
+				case SerializedPropertyType.LayerMask:
 
-						return GetLayerMaskName(prop.intValue);
+					return GetLayerMaskName( prop.intValue );
 
-					case SerializedPropertyType.String:
+				case SerializedPropertyType.String:
 
-						return prop.stringValue;
+					return prop.stringValue;
 
-					case SerializedPropertyType.Float:
+				case SerializedPropertyType.Float:
 
-						return prop.floatValue.ToString();
+					return prop.floatValue.ToString();
 				}
 
 				return prop.displayName;
@@ -825,13 +825,13 @@ namespace Malee.Editor {
 			return null;
 		}
 
-		private static string GetLayerMaskName(int mask) {
+		private static string GetLayerMaskName( int mask ) {
 
-			if (mask == 0) {
+			if( mask == 0 ) {
 
 				return "Nothing";
 			}
-			else if (mask < 0) {
+			else if( mask < 0 ) {
 
 				return "Everything";
 			}
@@ -839,16 +839,16 @@ namespace Malee.Editor {
 			string name = string.Empty;
 			int n = 0;
 
-			for (int i = 0; i < 32; i++) {
+			for( int i = 0; i < 32; i++ ) {
 
-				if (((1 << i) & mask) != 0) {
+				if( ( ( 1 << i ) & mask ) != 0 ) {
 
-					if (n == 4) {
+					if( n == 4 ) {
 
 						return "Mixed ...";
 					}
 
-					name += (n > 0 ? ", " : string.Empty) + LayerMask.LayerToName(i);
+					name += ( n > 0 ? ", " : string.Empty ) + LayerMask.LayerToName( i );
 					n++;
 				}
 			}
@@ -856,33 +856,33 @@ namespace Malee.Editor {
 			return name;
 		}
 
-		private void DrawFooter(Rect rect) {
+		private void DrawFooter( Rect rect ) {
 
-			if (drawFooterCallback != null) {
+			if( drawFooterCallback != null ) {
 
-				drawFooterCallback(rect);
+				drawFooterCallback( rect );
 				return;
 			}
 
-			if (Event.current.type == EventType.Repaint) {
+			if( Event.current.type == EventType.Repaint ) {
 
-				Style.footerBackground.Draw(rect, false, false, false, false);
+				Style.footerBackground.Draw( rect, false, false, false, false );
 			}
 
-			Rect addRect = new Rect(rect.xMin + 4f, rect.y - 3f, 25f, 13f);
-			Rect subRect = new Rect(rect.xMax - 29f, rect.y - 3f, 25f, 13f);
+			Rect addRect = new Rect( rect.xMin + 4f, rect.y - 3f, 25f, 13f );
+			Rect subRect = new Rect( rect.xMax - 29f, rect.y - 3f, 25f, 13f );
 
-			EditorGUI.BeginDisabledGroup(!canAdd);
+			EditorGUI.BeginDisabledGroup( !canAdd );
 
-			if (GUI.Button(addRect, onAddDropdownCallback != null ? Style.iconToolbarPlusMore : Style.iconToolbarPlus, Style.preButton)) {
+			if( GUI.Button( addRect, onAddDropdownCallback != null ? Style.iconToolbarPlusMore : Style.iconToolbarPlus, Style.preButton ) ) {
 
-				if (onAddDropdownCallback != null) {
+				if( onAddDropdownCallback != null ) {
 
-					onAddDropdownCallback(addRect, this);
+					onAddDropdownCallback( addRect, this );
 				}
-				else if (onAddCallback != null) {
+				else if( onAddCallback != null ) {
 
-					onAddCallback(this);
+					onAddCallback( this );
 				}
 				else {
 
@@ -892,17 +892,17 @@ namespace Malee.Editor {
 
 			EditorGUI.EndDisabledGroup();
 
-			EditorGUI.BeginDisabledGroup(!CanSelect(selection) || !canRemove || (onCanRemoveCallback != null && !onCanRemoveCallback(this)));
+			EditorGUI.BeginDisabledGroup( !CanSelect( selection ) || !canRemove || ( onCanRemoveCallback != null && !onCanRemoveCallback( this ) ) );
 
-			if (GUI.Button(subRect, Style.iconToolbarMinus, Style.preButton)) {
+			if( GUI.Button( subRect, Style.iconToolbarMinus, Style.preButton ) ) {
 
-				if (onRemoveCallback != null) {
+				if( onRemoveCallback != null ) {
 
-					onRemoveCallback(this);
+					onRemoveCallback( this );
 				}
 				else {
 
-					Remove(selection.ToArray());
+					Remove( selection.ToArray() );
 				}
 			}
 
@@ -911,148 +911,148 @@ namespace Malee.Editor {
 
 		private void DispatchChange() {
 
-			if (onChangedCallback != null) {
+			if( onChangedCallback != null ) {
 
-				onChangedCallback(this);
+				onChangedCallback( this );
 			}
 		}
 
-		private void HandleContextClick(Event evt, SerializedProperty element) {
+		private void HandleContextClick( Event evt, SerializedProperty element ) {
 
-			selection.Select(IndexOf(element));
+			selection.Select( IndexOf( element ) );
 
 			GenericMenu menu = new GenericMenu();
 
-			if (element.isInstantiatedPrefab) {
+			if( element.isInstantiatedPrefab ) {
 
-				menu.AddItem(new GUIContent("Revert " + GetElementLabel(element).text + " to Prefab"), false, selection.RevertValues, list);
-				menu.AddSeparator(string.Empty);
+				menu.AddItem( new GUIContent( "Revert " + GetElementLabel( element ).text + " to Prefab" ), false, selection.RevertValues, list );
+				menu.AddSeparator( string.Empty );
 			}
 
-			menu.AddItem(new GUIContent("Duplicate Array Element"), false, HandleDuplicate, list);
-			menu.AddItem(new GUIContent("Delete Array Element"), false, HandleDelete, list);
+			menu.AddItem( new GUIContent( "Duplicate Array Element" ), false, HandleDuplicate, list );
+			menu.AddItem( new GUIContent( "Delete Array Element" ), false, HandleDelete, list );
 			menu.ShowAsContext();
 
 			evt.Use();
 		}
 
-		private void HandleMultipleContextClick(Event evt) {
+		private void HandleMultipleContextClick( Event evt ) {
 
 			GenericMenu menu = new GenericMenu();
 
-			if (selection.CanRevert(list)) {
+			if( selection.CanRevert( list ) ) {
 
-				menu.AddItem(new GUIContent("Revert Values to Prefab"), false, selection.RevertValues, list);
-				menu.AddSeparator(string.Empty);
+				menu.AddItem( new GUIContent( "Revert Values to Prefab" ), false, selection.RevertValues, list );
+				menu.AddSeparator( string.Empty );
 			}
 
-			menu.AddItem(new GUIContent("Duplicate Array Elements"), false, HandleDuplicate, list);
-			menu.AddItem(new GUIContent("Delete Array Elements"), false, HandleDelete, list);
+			menu.AddItem( new GUIContent( "Duplicate Array Elements" ), false, HandleDuplicate, list );
+			menu.AddItem( new GUIContent( "Delete Array Elements" ), false, HandleDelete, list );
 			menu.ShowAsContext();
 
 			evt.Use();
 		}
 
-		private void HandleDelete(object userData) {
+		private void HandleDelete( object userData ) {
 
-			selection.Delete(userData as SerializedProperty);
-
-			DispatchChange();
-		}
-
-		private void HandleDuplicate(object userData) {
-
-			selection.Duplicate(userData as SerializedProperty);
+			selection.Delete( userData as SerializedProperty );
 
 			DispatchChange();
 		}
 
-		private void HandleDragAndDrop(Rect rect, Event evt) {
+		private void HandleDuplicate( object userData ) {
 
-			switch (evt.GetTypeForControl(dragDropControlID)) {
+			selection.Duplicate( userData as SerializedProperty );
 
-				case EventType.DragUpdated:
-				case EventType.DragPerform:
+			DispatchChange();
+		}
 
-					if (GUI.enabled && rect.Contains(evt.mousePosition)) {
+		private void HandleDragAndDrop( Rect rect, Event evt ) {
 
-						Object[] objectReferences = DragAndDrop.objectReferences;
-						Object[] references = new Object[1];
+			switch( evt.GetTypeForControl( dragDropControlID ) ) {
 
-						bool acceptDrag = false;
+			case EventType.DragUpdated:
+			case EventType.DragPerform:
 
-						foreach (Object object1 in objectReferences) {
-							
-							references[0] = object1;
-							Object object2 = ValidateObjectDragAndDrop(references);
-							
-							if (object2 != null) {
-								
-								DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
-								
-								if (evt.type == EventType.DragPerform) {
+				if( GUI.enabled && rect.Contains( evt.mousePosition ) ) {
 
-									if (onAppendDragDropCallback != null) {
+					Object[] objectReferences = DragAndDrop.objectReferences;
+					Object[] references = new Object[1];
 
-										onAppendDragDropCallback(object2, this);
-									}
-									else {
+					bool acceptDrag = false;
 
-										AppendDragAndDropValue(object2);
-									}
+					foreach( Object object1 in objectReferences ) {
 
-									acceptDrag = true;
-									DragAndDrop.activeControlID = 0;
+						references[0] = object1;
+						Object object2 = ValidateObjectDragAndDrop( references );
+
+						if( object2 != null ) {
+
+							DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+
+							if( evt.type == EventType.DragPerform ) {
+
+								if( onAppendDragDropCallback != null ) {
+
+									onAppendDragDropCallback( object2, this );
 								}
 								else {
-									
-									DragAndDrop.activeControlID = dragDropControlID;
+
+									AppendDragAndDropValue( object2 );
 								}
+
+								acceptDrag = true;
+								DragAndDrop.activeControlID = 0;
+							}
+							else {
+
+								DragAndDrop.activeControlID = dragDropControlID;
 							}
 						}
-
-						if (acceptDrag) {
-							
-							GUI.changed = true;
-							DragAndDrop.AcceptDrag();
-						}
 					}
 
-					break;
+					if( acceptDrag ) {
 
-				case EventType.DragExited:
-
-					if (GUI.enabled) {
-
-						HandleUtility.Repaint();
+						GUI.changed = true;
+						DragAndDrop.AcceptDrag();
 					}
-					
-					break;
+				}
+
+				break;
+
+			case EventType.DragExited:
+
+				if( GUI.enabled ) {
+
+					HandleUtility.Repaint();
+				}
+
+				break;
 			}
 		}
 
-		private Object ValidateObjectDragAndDrop(Object[] references) {
+		private Object ValidateObjectDragAndDrop( Object[] references ) {
 
-			if (onValidateDragAndDropCallback != null) {
+			if( onValidateDragAndDropCallback != null ) {
 
-				return onValidateDragAndDropCallback(references, this);
+				return onValidateDragAndDropCallback( references, this );
 			}
 
-			return Internals.ValidateObjectDragAndDrop(references, list);
+			return Internals.ValidateObjectDragAndDrop( references, list );
 		}
 
-		private void AppendDragAndDropValue(Object obj) {
+		private void AppendDragAndDropValue( Object obj ) {
 
-			Internals.AppendDragAndDropValue(obj, list);
+			Internals.AppendDragAndDropValue( obj, list );
 
 			DispatchChange();
 		}
 
-		private void HandlePreSelection(Rect rect, Event evt) {
+		private void HandlePreSelection( Rect rect, Event evt ) {
 
-			if (evt.type == EventType.MouseDrag && draggable && GUIUtility.hotControl == controlID) {
+			if( evt.type == EventType.MouseDrag && draggable && GUIUtility.hotControl == controlID ) {
 
-				if (selection.Length > 0 && UpdateDragPosition(evt.mousePosition, rect, dragList)) {
+				if( selection.Length > 0 && UpdateDragPosition( evt.mousePosition, rect, dragList ) ) {
 
 					GUIUtility.keyboardControl = controlID;
 					dragging = true;
@@ -1103,154 +1103,154 @@ namespace Malee.Editor {
 			*/
 		}
 
-		private void HandlePostSelection(Rect rect, Event evt) {
+		private void HandlePostSelection( Rect rect, Event evt ) {
 
-			switch (evt.GetTypeForControl(controlID)) {
+			switch( evt.GetTypeForControl( controlID ) ) {
 
-				case EventType.MouseDown:
+			case EventType.MouseDown:
 
-					if (rect.Contains(evt.mousePosition) && IsSelectionButton(evt)) {
+				if( rect.Contains( evt.mousePosition ) && IsSelectionButton( evt ) ) {
 
-						int index = GetSelectionIndex(evt.mousePosition);
+					int index = GetSelectionIndex( evt.mousePosition );
 
-						if (CanSelect(index)) {
+					if( CanSelect( index ) ) {
 
-							DoSelection(index, GUIUtility.keyboardControl == 0 || GUIUtility.keyboardControl == controlID || evt.button == 2, evt);
-						}
-						else {
-
-							selection.Clear();
-						}
-
-						HandleUtility.Repaint();
+						DoSelection( index, GUIUtility.keyboardControl == 0 || GUIUtility.keyboardControl == controlID || evt.button == 2, evt );
 					}
+					else {
 
-					break;
-
-				case EventType.MouseUp:
-
-					if (!draggable) {
-
-						//select the single object if no selection modifier is being performed
-
-						selection.SelectWhenNoAction(pressIndex, evt);
-
-						if (onMouseUpCallback != null && IsPositionWithinElement(evt.mousePosition, selection.Last)) {
-
-							onMouseUpCallback(this);
-						}
-					}
-					else if (GUIUtility.hotControl == controlID) {
-
-						evt.Use();
-
-						if (dragging) {
-
-							dragging = false;
-
-							//move elements in list
-							//sort the drag list
-
-							ReorderDraggedElements(dragList);
-
-							//apply changes
-
-							list.serializedObject.ApplyModifiedProperties();
-							list.serializedObject.Update();
-
-							if (onReorderCallback != null) {
-
-								onReorderCallback(this);
-							}
-
-							DispatchChange();
-						}
-						else {
-
-							//if we didn't drag, then select the original pressed object
-
-							selection.SelectWhenNoAction(pressIndex, evt);
-
-							if (onMouseUpCallback != null) {
-
-								onMouseUpCallback(this);
-							}
-						}
-
-						GUIUtility.hotControl = 0;
+						selection.Clear();
 					}
 
 					HandleUtility.Repaint();
+				}
 
-					break;
+				break;
 
-				case EventType.KeyDown:
+			case EventType.MouseUp:
 
-					if (GUIUtility.keyboardControl == controlID) {
+				if( !draggable ) {
 
-						if (evt.keyCode == KeyCode.DownArrow && !dragging) {
+					//select the single object if no selection modifier is being performed
 
-							selection.Select(Mathf.Min(selection.Last + 1, list.arraySize - 1));
-							evt.Use();
+					selection.SelectWhenNoAction( pressIndex, evt );
+
+					if( onMouseUpCallback != null && IsPositionWithinElement( evt.mousePosition, selection.Last ) ) {
+
+						onMouseUpCallback( this );
+					}
+				}
+				else if( GUIUtility.hotControl == controlID ) {
+
+					evt.Use();
+
+					if( dragging ) {
+
+						dragging = false;
+
+						//move elements in list
+						//sort the drag list
+
+						ReorderDraggedElements( dragList );
+
+						//apply changes
+
+						list.serializedObject.ApplyModifiedProperties();
+						list.serializedObject.Update();
+
+						if( onReorderCallback != null ) {
+
+							onReorderCallback( this );
 						}
-						else if (evt.keyCode == KeyCode.UpArrow && !dragging) {
 
-							selection.Select(Mathf.Max(selection.Last - 1, 0));
-							evt.Use();
-						}
-						else if (evt.keyCode == KeyCode.Escape && GUIUtility.hotControl == controlID) {
+						DispatchChange();
+					}
+					else {
 
-							GUIUtility.hotControl = 0;
+						//if we didn't drag, then select the original pressed object
 
-							if (dragging) {
+						selection.SelectWhenNoAction( pressIndex, evt );
 
-								dragging = false;
-								selection = beforeDragSelection;
-							}
+						if( onMouseUpCallback != null ) {
 
-							evt.Use();
+							onMouseUpCallback( this );
 						}
 					}
 
-					break;
+					GUIUtility.hotControl = 0;
+				}
+
+				HandleUtility.Repaint();
+
+				break;
+
+			case EventType.KeyDown:
+
+				if( GUIUtility.keyboardControl == controlID ) {
+
+					if( evt.keyCode == KeyCode.DownArrow && !dragging ) {
+
+						selection.Select( Mathf.Min( selection.Last + 1, list.arraySize - 1 ) );
+						evt.Use();
+					}
+					else if( evt.keyCode == KeyCode.UpArrow && !dragging ) {
+
+						selection.Select( Mathf.Max( selection.Last - 1, 0 ) );
+						evt.Use();
+					}
+					else if( evt.keyCode == KeyCode.Escape && GUIUtility.hotControl == controlID ) {
+
+						GUIUtility.hotControl = 0;
+
+						if( dragging ) {
+
+							dragging = false;
+							selection = beforeDragSelection;
+						}
+
+						evt.Use();
+					}
+				}
+
+				break;
 			}
 		}
 
-		private bool IsSelectionButton(Event evt) {
+		private bool IsSelectionButton( Event evt ) {
 
 			return evt.button == 0 || evt.button == 2;
 		}
 
-		private void DoSelection(int index, bool setKeyboardControl, Event evt) {
+		private void DoSelection( int index, bool setKeyboardControl, Event evt ) {
 
 			//append selections based on action, this may be a additive (ctrl) or range (shift) selection
 
-			if (multipleSelection) {
+			if( multipleSelection ) {
 
-				selection.AppendWithAction(pressIndex = index, evt);
+				selection.AppendWithAction( pressIndex = index, evt );
 			}
 			else {
 
-				selection.Select(pressIndex = index);
+				selection.Select( pressIndex = index );
 			}
 
-			if (onSelectCallback != null) {
+			if( onSelectCallback != null ) {
 
-				onSelectCallback(this);
+				onSelectCallback( this );
 			}
 
-			if (draggable) {
+			if( draggable ) {
 
 				dragging = false;
 				dragPosition = pressPosition = evt.mousePosition.y;
-				dragList = GetDragList(dragPosition);
+				dragList = GetDragList( dragPosition );
 
 				beforeDragSelection = selection.Clone();
 
 				GUIUtility.hotControl = controlID;
 			}
 
-			if (setKeyboardControl) {
+			if( setKeyboardControl ) {
 
 				GUIUtility.keyboardControl = controlID;
 			}
@@ -1258,22 +1258,22 @@ namespace Malee.Editor {
 			evt.Use();
 		}
 
-		private DragElement[] GetDragList(float dragPosition) {
+		private DragElement[] GetDragList( float dragPosition ) {
 
 			int i, len = list.arraySize;
 
-			if (dragList == null) {
+			if( dragList == null ) {
 
 				dragList = new DragElement[len];
 			}
-			else if (dragList.Length != len) {
+			else if( dragList.Length != len ) {
 
-				System.Array.Resize(ref dragList, len);
+				System.Array.Resize( ref dragList, len );
 			}
 
-			for (i = 0; i < len; i++) {
+			for( i = 0; i < len; i++ ) {
 
-				SerializedProperty property = list.GetArrayElementAtIndex(i);
+				SerializedProperty property = list.GetArrayElementAtIndex( i );
 				Rect elementRect = elementRects[i];
 
 				DragElement dragElement = new DragElement() {
@@ -1281,7 +1281,7 @@ namespace Malee.Editor {
 					dragOffset = dragPosition - elementRect.y,
 					rect = elementRect,
 					desiredRect = elementRect,
-					selected = selection.Contains(i),
+					selected = selection.Contains( i ),
 					startIndex = i
 				};
 
@@ -1291,24 +1291,24 @@ namespace Malee.Editor {
 			//finally, sort the dragList by selection, selected objects appear first in the list
 			//selection order is preserved as well
 
-			System.Array.Sort(dragList, (a, b) => {
+			System.Array.Sort( dragList, ( a, b ) => {
 
-				if (b.selected) {
+				if( b.selected ) {
 
-					return a.selected ? a.startIndex.CompareTo(b.startIndex) : 1;
+					return a.selected ? a.startIndex.CompareTo( b.startIndex ) : 1;
 				}
-				else if (a.selected) {
+				else if( a.selected ) {
 
-					return b.selected ? b.startIndex.CompareTo(a.startIndex) : -1;
+					return b.selected ? b.startIndex.CompareTo( a.startIndex ) : -1;
 				}
 
-				return a.startIndex.CompareTo(b.startIndex);
-			});
+				return a.startIndex.CompareTo( b.startIndex );
+			} );
 
 			return dragList;
 		}
 
-		private bool UpdateDragPosition(Vector2 position, Rect bounds, DragElement[] dragList) {
+		private bool UpdateDragPosition( Vector2 position, Rect bounds, DragElement[] dragList ) {
 
 			//find new drag position
 
@@ -1318,74 +1318,74 @@ namespace Malee.Editor {
 			float minOffset = dragList[startIndex].dragOffset;
 			float maxOffset = dragList[endIndex].rect.height - dragList[endIndex].dragOffset;
 
-			dragPosition = Mathf.Clamp(position.y, bounds.yMin + minOffset, bounds.yMax - maxOffset);
+			dragPosition = Mathf.Clamp( position.y, bounds.yMin + minOffset, bounds.yMax - maxOffset );
 
-			if (Mathf.Abs(dragPosition - pressPosition) > 1) {
+			if( Mathf.Abs( dragPosition - pressPosition ) > 1 ) {
 
-				dragDirection = (int)Mathf.Sign(dragPosition - pressPosition);
+				dragDirection = (int)Mathf.Sign( dragPosition - pressPosition );
 				return true;
 			}
 
 			return false;
 		}
 
-		private void ReorderDraggedElements(DragElement[] dragList) {
+		private void ReorderDraggedElements( DragElement[] dragList ) {
 
 			//save the current expanded states on all elements. I don't see any other way to do this
 			//MoveArrayElement does not move the foldout states, so... fun.
 
-			for (int i = 0; i < dragList.Length; i++) {
+			for( int i = 0; i < dragList.Length; i++ ) {
 
 				dragList[i].RecordState();
 			}
 
 			//sort list based on positions
 
-			System.Array.Sort(dragList, (a, b) => a.desiredRect.center.y.CompareTo(b.desiredRect.center.y));
+			System.Array.Sort( dragList, ( a, b ) => a.desiredRect.center.y.CompareTo( b.desiredRect.center.y ) );
 
-			selection.Sort((a, b) => {
+			selection.Sort( ( a, b ) => {
 
-				int d1 = GetDragIndexFromSelection(a);
-				int d2 = GetDragIndexFromSelection(b);
+				int d1 = GetDragIndexFromSelection( a );
+				int d2 = GetDragIndexFromSelection( b );
 
-				return dragDirection > 0 ? d1.CompareTo(d2) : d2.CompareTo(d1);
-			});
+				return dragDirection > 0 ? d1.CompareTo( d2 ) : d2.CompareTo( d1 );
+			} );
 
 			//swap the selected elements in the List
 
 			int s = selection.Length;
 
-			while (--s > -1) { 
+			while( --s > -1 ) {
 
-				int newIndex = GetDragIndexFromSelection(selection[s]);
+				int newIndex = GetDragIndexFromSelection( selection[s] );
 
 				selection[s] = newIndex;
 
-				list.MoveArrayElement(dragList[newIndex].startIndex, newIndex);
+				list.MoveArrayElement( dragList[newIndex].startIndex, newIndex );
 			}
 
 			//restore expanded states on items
 
-			for (int i = 0; i < dragList.Length; i++) {
+			for( int i = 0; i < dragList.Length; i++ ) {
 
-				dragList[i].RestoreState(list.GetArrayElementAtIndex(i));
+				dragList[i].RestoreState( list.GetArrayElementAtIndex( i ) );
 			}
 		}
 
-		private int GetDragIndexFromSelection(int index) {
+		private int GetDragIndexFromSelection( int index ) {
 
-			return System.Array.FindIndex(dragList, t => t.startIndex == index);
+			return System.Array.FindIndex( dragList, t => t.startIndex == index );
 		}
 
-		private int GetSelectionIndex(Vector2 position) {
+		private int GetSelectionIndex( Vector2 position ) {
 
 			int i, len = elementRects.Length;
 
-			for (i = 0; i < len; i++) {
+			for( i = 0; i < len; i++ ) {
 
 				Rect rect = elementRects[i];
 
-				if (rect.Contains(position) || (i == 0 && position.y <= rect.yMin) || (i == len - 1 && position.y >= rect.yMax)) {
+				if( rect.Contains( position ) || ( i == 0 && position.y <= rect.yMin ) || ( i == len - 1 && position.y >= rect.yMax ) ) {
 
 					return i;
 				}
@@ -1394,55 +1394,55 @@ namespace Malee.Editor {
 			return -1;
 		}
 
-		private bool CanSelect(ListSelection selection) {
+		private bool CanSelect( ListSelection selection ) {
 
-			return selection.Length > 0 ? selection.All(s => CanSelect(s)) : false;
+			return selection.Length > 0 ? selection.All( s => CanSelect( s ) ) : false;
 		}
 
-		private bool CanSelect(int index) {
+		private bool CanSelect( int index ) {
 
 			return index >= 0 && index < list.arraySize;
 		}
 
-		private bool CanSelect(Vector2 position) {
+		private bool CanSelect( Vector2 position ) {
 
-			return selection.Length > 0 ? selection.Any(s => IsPositionWithinElement(position, s)) : false;
+			return selection.Length > 0 ? selection.Any( s => IsPositionWithinElement( position, s ) ) : false;
 		}
 
-		private bool IsPositionWithinElement(Vector2 position, int index) {
+		private bool IsPositionWithinElement( Vector2 position, int index ) {
 
-			return CanSelect(index) ? elementRects[index].Contains(position) : false;
+			return CanSelect( index ) ? elementRects[index].Contains( position ) : false;
 		}
 
-		private bool IsElementExpandable(SerializedProperty element) {
+		private bool IsElementExpandable( SerializedProperty element ) {
 
-			switch (elementDisplayType) {
+			switch( elementDisplayType ) {
 
-				case ElementDisplayType.Auto:
+			case ElementDisplayType.Auto:
 
-					return element.hasVisibleChildren && IsTypeExpandable(element.propertyType);
+				return element.hasVisibleChildren && IsTypeExpandable( element.propertyType );
 
-				case ElementDisplayType.Expandable: return true;
-				case ElementDisplayType.SingleLine: return false;
+			case ElementDisplayType.Expandable: return true;
+			case ElementDisplayType.SingleLine: return false;
 			}
 
 			return false;
 		}
 
-		private bool IsTypeExpandable(SerializedPropertyType type) {
-			
-			switch (type) {
+		private bool IsTypeExpandable( SerializedPropertyType type ) {
 
-				case SerializedPropertyType.Generic:
-				case SerializedPropertyType.Vector4:
-				case SerializedPropertyType.Quaternion:
-				case SerializedPropertyType.ArraySize:
+			switch( type ) {
 
-					return true;
+			case SerializedPropertyType.Generic:
+			case SerializedPropertyType.Vector4:
+			case SerializedPropertyType.Quaternion:
+			case SerializedPropertyType.ArraySize:
 
-				default:
+				return true;
 
-					return false;
+			default:
+
+				return false;
 			}
 		}
 
@@ -1451,7 +1451,7 @@ namespace Malee.Editor {
 		//
 
 		static class Style {
-			
+
 			public static GUIContent iconToolbarPlus;
 			public static GUIContent iconToolbarPlusMore;
 			public static GUIContent iconToolbarMinus;
@@ -1467,22 +1467,22 @@ namespace Malee.Editor {
 
 			static Style() {
 
-				iconToolbarPlus = EditorGUIUtility.IconContent("Toolbar Plus", "Add to list");
-				iconToolbarPlusMore = EditorGUIUtility.IconContent("Toolbar Plus More", "Choose to add to list");
-				iconToolbarMinus = EditorGUIUtility.IconContent("Toolbar Minus", "Remove selection from list");
-				draggingHandle = new GUIStyle("RL DragHandle");
-				headerBackground = new GUIStyle("RL Header");
-				footerBackground = new GUIStyle("RL Footer");
-				elementBackground = new GUIStyle("RL Element");
-				elementBackground.border = new RectOffset(2, 3, 2, 3);
-				verticalLabel = new GUIStyle(EditorStyles.label);
+				iconToolbarPlus = EditorGUIUtility.IconContent( "Toolbar Plus", "Add to list" );
+				iconToolbarPlusMore = EditorGUIUtility.IconContent( "Toolbar Plus More", "Choose to add to list" );
+				iconToolbarMinus = EditorGUIUtility.IconContent( "Toolbar Minus", "Remove selection from list" );
+				draggingHandle = new GUIStyle( "RL DragHandle" );
+				headerBackground = new GUIStyle( "RL Header" );
+				footerBackground = new GUIStyle( "RL Footer" );
+				elementBackground = new GUIStyle( "RL Element" );
+				elementBackground.border = new RectOffset( 2, 3, 2, 3 );
+				verticalLabel = new GUIStyle( EditorStyles.label );
 				verticalLabel.alignment = TextAnchor.MiddleLeft;
-				verticalLabel.contentOffset = new Vector2(10, -3);
-				boxBackground = new GUIStyle("RL Background");
-				boxBackground.border = new RectOffset(6, 3, 3, 6);
-				preButton = new GUIStyle("RL FooterButton");
-				expandButton = EditorGUIUtility.IconContent("winbtn_win_max");
-				collapseButton = EditorGUIUtility.IconContent("winbtn_win_min");
+				verticalLabel.contentOffset = new Vector2( 10, -3 );
+				boxBackground = new GUIStyle( "RL Background" );
+				boxBackground.border = new RectOffset( 6, 3, 3, 6 );
+				preButton = new GUIStyle( "RL FooterButton" );
+				expandButton = EditorGUIUtility.IconContent( "winbtn_win_max" );
+				collapseButton = EditorGUIUtility.IconContent( "winbtn_win_min" );
 			}
 		}
 
@@ -1502,13 +1502,13 @@ namespace Malee.Editor {
 			private bool isExpanded;
 			private Dictionary<int, bool> states;
 
-			internal bool Overlaps(Rect value, int index, int direction) {
+			internal bool Overlaps( Rect value, int index, int direction ) {
 
-				if (direction < 0 && index < startIndex) {
+				if( direction < 0 && index < startIndex ) {
 
 					return desiredRect.yMin < value.center.y;
 				}
-				else if (direction > 0 && index > startIndex) {
+				else if( direction > 0 && index > startIndex ) {
 
 					return desiredRect.yMax > value.center.y;
 				}
@@ -1521,28 +1521,28 @@ namespace Malee.Editor {
 				states = new Dictionary<int, bool>();
 				isExpanded = property.isExpanded;
 
-				Iterate(this, property, (DragElement e, SerializedProperty p, int index) => { e.states[index] = p.isExpanded; });
+				Iterate( this, property, ( DragElement e, SerializedProperty p, int index ) => { e.states[index] = p.isExpanded; } );
 			}
 
-			internal void RestoreState(SerializedProperty property) {
+			internal void RestoreState( SerializedProperty property ) {
 
 				property.isExpanded = isExpanded;
 
-				Iterate(this, property, (DragElement e, SerializedProperty p, int index) => { p.isExpanded = e.states[index]; });
+				Iterate( this, property, ( DragElement e, SerializedProperty p, int index ) => { p.isExpanded = e.states[index]; } );
 			}
 
-			private static void Iterate(DragElement element, SerializedProperty property, System.Action<DragElement, SerializedProperty, int> action) {
+			private static void Iterate( DragElement element, SerializedProperty property, System.Action<DragElement, SerializedProperty, int> action ) {
 
 				SerializedProperty copy = property.Copy();
 				SerializedProperty end = copy.GetEndProperty();
 
 				int index = 0;
 
-				while (copy.NextVisible(true) && !SerializedProperty.EqualContents(copy, end)) {
+				while( copy.NextVisible( true ) && !SerializedProperty.EqualContents( copy, end ) ) {
 
-					if (copy.hasVisibleChildren) {
+					if( copy.hasVisibleChildren ) {
 
-						action(element, copy, index);
+						action( element, copy, index );
 						index++;
 					}
 				}
@@ -1562,36 +1562,36 @@ namespace Malee.Editor {
 				animIDs = new Dictionary<int, Rect>();
 			}
 
-			public Rect GetRect(int id, Rect r, float easing) {
-				
-				if (Event.current.type != EventType.Repaint) {
-					
+			public Rect GetRect( int id, Rect r, float easing ) {
+
+				if( Event.current.type != EventType.Repaint ) {
+
 					return r;
 				}
 
-				if (!animIDs.ContainsKey(id)) {
+				if( !animIDs.ContainsKey( id ) ) {
 
-					animIDs.Add(id, r);
+					animIDs.Add( id, r );
 					return r;
 				}
 				else {
 
 					Rect rect = animIDs[id];
 
-					if (rect.y != r.y) {
+					if( rect.y != r.y ) {
 
 						float delta = r.y - rect.y;
-						float absDelta = Mathf.Abs(delta);
+						float absDelta = Mathf.Abs( delta );
 
 						//if the distance between current rect and target is too large, then move the element towards the target rect so it reaches the destination faster
 
-						if (absDelta > (rect.height * 2)) {
+						if( absDelta > ( rect.height * 2 ) ) {
 
 							r.y = delta > 0 ? r.y - rect.height : r.y + rect.height;
 						}
-						else if (absDelta > 0.5) {
+						else if( absDelta > 0.5 ) {
 
-							r.y = Mathf.Lerp(rect.y, r.y, easing);
+							r.y = Mathf.Lerp( rect.y, r.y, easing );
 						}
 
 						animIDs[id] = r;
@@ -1602,15 +1602,15 @@ namespace Malee.Editor {
 				}
 			}
 
-			public Rect SetRect(int id, Rect rect) {
+			public Rect SetRect( int id, Rect rect ) {
 
-				if (animIDs.ContainsKey(id)) {
+				if( animIDs.ContainsKey( id ) ) {
 
 					animIDs[id] = rect;
 				}
 				else {
 
-					animIDs.Add(id, rect);
+					animIDs.Add( id, rect );
 				}
 
 				return rect;
@@ -1632,9 +1632,9 @@ namespace Malee.Editor {
 				indexes = new List<int>();
 			}
 
-			public ListSelection(int[] indexes) {
+			public ListSelection( int[] indexes ) {
 
-				this.indexes = new List<int>(indexes);
+				this.indexes = new List<int>( indexes );
 			}
 
 			public int First {
@@ -1658,19 +1658,19 @@ namespace Malee.Editor {
 				set {
 
 					int oldIndex = indexes[index];
-					
+
 					indexes[index] = value;
 
-					if (oldIndex == firstSelected) {
+					if( oldIndex == firstSelected ) {
 
 						firstSelected = value;
 					}
 				}
 			}
 
-			public bool Contains(int index) {
+			public bool Contains( int index ) {
 
-				return indexes.Contains(index);
+				return indexes.Contains( index );
 			}
 
 			public void Clear() {
@@ -1679,69 +1679,69 @@ namespace Malee.Editor {
 				firstSelected = null;
 			}
 
-			public void SelectWhenNoAction(int index, Event evt) {
+			public void SelectWhenNoAction( int index, Event evt ) {
 
-				if (!EditorGUI.actionKey && !evt.shift) {
+				if( !EditorGUI.actionKey && !evt.shift ) {
 
-					Select(index);
+					Select( index );
 				}
 			}
 
-			public void Select(int index) {
+			public void Select( int index ) {
 
 				indexes.Clear();
-				indexes.Add(index);
+				indexes.Add( index );
 
 				firstSelected = index;
 			}
-			
-			public void Remove(int index) {
 
-				if (indexes.Contains(index)) {
+			public void Remove( int index ) {
 
-					indexes.Remove(index);
+				if( indexes.Contains( index ) ) {
+
+					indexes.Remove( index );
 				}
-			}			
+			}
 
-			public void AppendWithAction(int index, Event evt) {
+			public void AppendWithAction( int index, Event evt ) {
 
-				if (EditorGUI.actionKey) {
+				if( EditorGUI.actionKey ) {
 
-					if (Contains(index)) {
+					if( Contains( index ) ) {
 
-						Remove(index);
+						Remove( index );
 					}
 					else {
 
-						Append(index);
+						Append( index );
 						firstSelected = index;
 					}
 				}
-				else if (evt.shift && indexes.Count > 0 && firstSelected.HasValue) {
+				else if( evt.shift && indexes.Count > 0 && firstSelected.HasValue ) {
 
 					indexes.Clear();
 
-					AppendRange(firstSelected.Value, index);
+					AppendRange( firstSelected.Value, index );
 				}
-				else if (!Contains(index)) {
+				else if( !Contains( index ) ) {
 
-					Select(index);
+					Select( index );
 				}
 			}
 
 			public void Sort() {
 
-				if (indexes.Count > 0) {
+				if( indexes.Count > 0 ) {
 
 					indexes.Sort();
 				}
 			}
 
-			public void Sort(System.Comparison<int> comparison) {
+			public void Sort( System.Comparison<int> comparison ) {
 
-				if (indexes.Count > 0) {
+				if( indexes.Count > 0 ) {
 
-					indexes.Sort(comparison);
+					indexes.Sort( comparison );
 				}
 			}
 
@@ -1752,19 +1752,19 @@ namespace Malee.Editor {
 
 			public ListSelection Clone() {
 
-				ListSelection clone = new ListSelection(ToArray());
+				ListSelection clone = new ListSelection( ToArray() );
 				clone.firstSelected = firstSelected;
 
 				return clone;
 			}
 
-			internal bool CanRevert(SerializedProperty list) {
+			internal bool CanRevert( SerializedProperty list ) {
 
-				if (list.serializedObject.targetObjects.Length == 1) {
+				if( list.serializedObject.targetObjects.Length == 1 ) {
 
-					for (int i = 0; i < Length; i++) {
+					for( int i = 0; i < Length; i++ ) {
 
-						if (list.GetArrayElementAtIndex(this[i]).isInstantiatedPrefab) {
+						if( list.GetArrayElementAtIndex( this[i] ).isInstantiatedPrefab ) {
 
 							return true;
 						}
@@ -1774,53 +1774,53 @@ namespace Malee.Editor {
 				return false;
 			}
 
-			internal void RevertValues(object userData) {
+			internal void RevertValues( object userData ) {
 
 				SerializedProperty list = userData as SerializedProperty;
 
-				for (int i = 0; i < Length; i++) {
+				for( int i = 0; i < Length; i++ ) {
 
-					SerializedProperty property = list.GetArrayElementAtIndex(this[i]);
+					SerializedProperty property = list.GetArrayElementAtIndex( this[i] );
 
-					if (property.isInstantiatedPrefab) {
+					if( property.isInstantiatedPrefab ) {
 
-						property.prefabOverride = false;						
+						property.prefabOverride = false;
 					}
 				}
-				
+
 				list.serializedObject.ApplyModifiedProperties();
 				list.serializedObject.Update();
 
 				HandleUtility.Repaint();
 			}
 
-			internal void Duplicate(SerializedProperty list) {
+			internal void Duplicate( SerializedProperty list ) {
 
 				int offset = 0;
 
-				for (int i = 0; i < Length; i++) {
-					
+				for( int i = 0; i < Length; i++ ) {
+
 					this[i] += offset;
 
-					list.GetArrayElementAtIndex(this[i]).DuplicateCommand();				
+					list.GetArrayElementAtIndex( this[i] ).DuplicateCommand();
 					list.serializedObject.ApplyModifiedProperties();
 					list.serializedObject.Update();
-					
+
 					offset++;
-				}				
+				}
 
 				HandleUtility.Repaint();
 			}
 
-			internal void Delete(SerializedProperty list) {
+			internal void Delete( SerializedProperty list ) {
 
 				Sort();
-				
+
 				int i = Length;
 
-				while (--i > -1) {
+				while( --i > -1 ) {
 
-					list.GetArrayElementAtIndex(this[i]).DeleteCommand();
+					list.GetArrayElementAtIndex( this[i] ).DeleteCommand();
 				}
 
 				Clear();
@@ -1831,37 +1831,37 @@ namespace Malee.Editor {
 				HandleUtility.Repaint();
 			}
 
-			private void Append(int index) {
+			private void Append( int index ) {
 
-				if (index >= 0 && !indexes.Contains(index)) {
+				if( index >= 0 && !indexes.Contains( index ) ) {
 
-					indexes.Add(index);
+					indexes.Add( index );
 				}
 			}
 
-			private void AppendRange(int from, int to) {
+			private void AppendRange( int from, int to ) {
 
-				int dir = (int)Mathf.Sign(to - from);
+				int dir = (int)Mathf.Sign( to - from );
 
-				if (dir != 0) {
+				if( dir != 0 ) {
 
-					for (int i = from; i != to; i += dir) {
+					for( int i = from; i != to; i += dir ) {
 
-						Append(i);
+						Append( i );
 					}
 				}
 
-				Append(to);
+				Append( to );
 			}
 
 			public IEnumerator<int> GetEnumerator() {
 
-				return ((IEnumerable<int>)indexes).GetEnumerator();
+				return ( (IEnumerable<int>)indexes ).GetEnumerator();
 			}
 
 			IEnumerator IEnumerable.GetEnumerator() {
 
-				return ((IEnumerable<int>)indexes).GetEnumerator();
+				return ( (IEnumerable<int>)indexes ).GetEnumerator();
 			}
 		}
 
@@ -1871,13 +1871,13 @@ namespace Malee.Editor {
 
 		class InvalidListException : System.InvalidOperationException {
 
-			public InvalidListException() : base("ReorderableList serializedProperty must be an array") {
+			public InvalidListException() : base( "ReorderableList serializedProperty must be an array" ) {
 			}
 		}
 
 		class MissingListExeption : System.ArgumentNullException {
 
-			public MissingListExeption() : base("ReorderableList serializedProperty is null") {
+			public MissingListExeption() : base( "ReorderableList serializedProperty is null" ) {
 			}
 		}
 
@@ -1894,14 +1894,14 @@ namespace Malee.Editor {
 
 			static Internals() {
 
-				dragDropValidation = System.Type.GetType("UnityEditor.EditorGUI, UnityEditor").GetMethod("ValidateObjectFieldAssignment", BindingFlags.NonPublic | BindingFlags.Static);
-				appendDragDrop = typeof(SerializedProperty).GetMethod("AppendFoldoutPPtrValue", BindingFlags.NonPublic | BindingFlags.Instance);
+				dragDropValidation = System.Type.GetType( "UnityEditor.EditorGUI, UnityEditor" ).GetMethod( "ValidateObjectFieldAssignment", BindingFlags.NonPublic | BindingFlags.Static );
+				appendDragDrop = typeof( SerializedProperty ).GetMethod( "AppendFoldoutPPtrValue", BindingFlags.NonPublic | BindingFlags.Instance );
 			}
 
-			internal static Object ValidateObjectDragAndDrop(Object[] references, SerializedProperty property) {
+			internal static Object ValidateObjectDragAndDrop( Object[] references, SerializedProperty property ) {
 
 #if UNITY_2017_1_OR_NEWER
-				dragDropValidationParams = GetParams(ref dragDropValidationParams, 4);
+				dragDropValidationParams = GetParams( ref dragDropValidationParams, 4 );
 				dragDropValidationParams[0] = references;
 				dragDropValidationParams[1] = null;
 				dragDropValidationParams[2] = property;
@@ -1912,19 +1912,19 @@ namespace Malee.Editor {
 				dragDropValidationParams[1] = null;
 				dragDropValidationParams[2] = property;
 #endif
-				return dragDropValidation.Invoke(null, dragDropValidationParams) as Object;
+				return dragDropValidation.Invoke( null, dragDropValidationParams ) as Object;
 			}
 
-			internal static void AppendDragAndDropValue(Object obj, SerializedProperty list) {
+			internal static void AppendDragAndDropValue( Object obj, SerializedProperty list ) {
 
-				appendDragDropParams = GetParams(ref appendDragDropParams, 1);
+				appendDragDropParams = GetParams( ref appendDragDropParams, 1 );
 				appendDragDropParams[0] = obj;
-				appendDragDrop.Invoke(list, appendDragDropParams);
+				appendDragDrop.Invoke( list, appendDragDropParams );
 			}
 
-			private static object[] GetParams(ref object[] parameters, int count) {
+			private static object[] GetParams( ref object[] parameters, int count ) {
 
-				if (parameters == null) {
+				if( parameters == null ) {
 
 					parameters = new object[count];
 				}
@@ -1934,4 +1934,3 @@ namespace Malee.Editor {
 		}
 	}
 }
- 

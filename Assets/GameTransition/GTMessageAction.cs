@@ -11,6 +11,9 @@ namespace GameTransition {
 			if( Message == message ) {
 				triggered = true;
 			}
+			else {
+				Debug.LogWarningFormat( "Mismatch message expect {0} but {1}", Message, message );
+			}
 		}
 
 		public override void OnEnable() {

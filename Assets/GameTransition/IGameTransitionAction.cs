@@ -22,7 +22,6 @@ namespace GameTransition {
         Component Component { get; set; }
 
 		Type ProvideType { get; }
-
 		string ProvideTitle { get; }
 	}
 

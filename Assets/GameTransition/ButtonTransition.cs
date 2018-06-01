@@ -4,8 +4,8 @@ namespace GameTransition {
 	public class ButtonTransition : GameTransitionBase {
 		public Button Button;
 
-		protected override void Start() {
-			base.Start();
+		protected override void Awake() {
+			base.Awake();
 			Button.onClick.AddListener( () => {
 				StartState();
 			} );
