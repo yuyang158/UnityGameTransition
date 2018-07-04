@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace GameTransition.Utility {
     public static class AssemblyHelper {
@@ -14,6 +15,8 @@ namespace GameTransition.Utility {
             initialized = true;
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach( var assembly in assemblies ) {
+				if( assemblyMapping.ContainsKey( assembly.FullName ) )
+					continue;
                 assemblyMapping.Add( assembly.FullName, assembly );
             }
         }
