@@ -27,7 +27,7 @@ namespace GameTransition {
 			get {
 				string title = "";
 				foreach( var descriptor in holder.Descriptors ) {
-					title += descriptor.ToString();
+					title += descriptor + "\n";
 				}
 
 				return title;

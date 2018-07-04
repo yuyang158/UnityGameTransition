@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc2b563ca2a963499a3ef318f7aa708, type: 3}
+  m_Name: MultiActionState
+  m_EditorClassIdentifier: 
+  actions:
+    array:
+    - {fileID: 11400000, guid: 64e2c4b147d7c2949aaab2c0c2c08d3a, type: 2}
+    - {fileID: 11400000, guid: 9f1eb70e0959f432c9037148807d2f15, type: 2}

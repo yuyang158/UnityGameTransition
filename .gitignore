@@ -1,7 +1,13 @@
 /Library
 /Temp
+/obj
 /UnityGameTransition.csproj
 /UnityGameTransition.Editor.csproj
 /UnityGameTransition.sln
 .vs
+ProjectSettings/ProjectVersion.txt
+*.csproj
+Packages/manifest.json
+ProjectSettings/PresetManager.asset
+ProjectSettings/ProjectVersion.txt
 ProjectSettings/ProjectVersion.txt

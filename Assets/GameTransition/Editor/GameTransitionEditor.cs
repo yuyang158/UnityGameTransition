@@ -53,7 +53,19 @@ namespace GameTransition.Edit {
 						var provide = action as IGameObjectProvide;
 						var binding = transition.bindings[bindingIndex];
 						binding.ActionIndex = actionIndex;
-                        binding.GO = EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
+
+                        var title = provide.ProvideTitle;
+                        if(title.Contains("\n")) {
+                            var titles = title.Split('\n');
+                            foreach( var t in titles ) {
+                                if(t.Length > 0)
+                                    EditorGUILayout.LabelField( t );
+                            }
+                            binding.GO = EditorGUILayout.ObjectField( "上方操作对应GameObject", binding.GO, provide.ProvideType, true );
+                        }
+                        else {
+                            binding.GO = EditorGUILayout.ObjectField( provide.ProvideTitle, binding.GO, provide.ProvideType, true );
+                        }
 
 						bindingIndex++;
 					}
